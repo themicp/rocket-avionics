@@ -1,7 +1,9 @@
 #include "Wire.h"
 #include "BMP280.h"
+#include "MPU9250_API.h"
 
-BMP280 *pSensor;
+BMP280 *pressureSensor;
+MPU9250_API *imuSensor;
 
 void setup()
 {
@@ -10,18 +12,47 @@ void setup()
 
   Wire.begin();
 
-  pSensor = &(pSensor->getInstance());
+  pressureSensor = &(pressureSensor->getInstance());
+  imuSensor = &(imuSensor->getInstance());
 }
 
 void loop()
 {
-  Serial.print(" Pressure: ");
-  Serial.print(pSensor->pressure());
+  Serial.print("Pressure (Pa): ");
+  Serial.print(pressureSensor->pressure());
+  Serial.println();
 
-  Serial.print(" AltM: ");
-  Serial.print(pSensor->altitude());
+  Serial.print("Altitude (m): ");
+  Serial.print(pressureSensor->altitude());
 
   Serial.println();
 
-  delay(50);
+  Serial.print("Pitch, Yaw, Roll (deg): ");
+  Serial.print(imuSensor->pitch());
+  Serial.print(", ");
+  Serial.print(imuSensor->yaw());
+  Serial.print(", ");
+  Serial.print(imuSensor->roll());
+
+  Serial.println();
+
+  Serial.print("Acceleration X, Y, Z (mg): ");
+  Serial.print(imuSensor->accelerationX());
+  Serial.print(", ");
+  Serial.print(imuSensor->accelerationY());
+  Serial.print(", ");
+  Serial.print(imuSensor->accelerationZ());
+
+  Serial.println();
+
+  Serial.print("Gyroscope X, Y, Z (deg/s): ");
+  Serial.print(imuSensor->gyroX());
+  Serial.print(", ");
+  Serial.print(imuSensor->gyroY());
+  Serial.print(", ");
+  Serial.print(imuSensor->gyroZ());
+
+  Serial.println();
+
+  delay(1000);
 }
