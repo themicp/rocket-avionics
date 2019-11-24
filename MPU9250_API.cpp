@@ -112,8 +112,8 @@ MPU9250_API::MPU9250_API() {
     sensor.initAK8963(sensor.factoryMagCalibration);
 
     // Get sensor resolutions, only need to do this once
-    sensor.getAres(0);
-    sensor.getGres(0);
+    sensor.getAres();
+    sensor.getGres();
     sensor.getMres();
   } else {
     Serial.print("Could not connect to MPU9250: 0x");
