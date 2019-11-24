@@ -7,4 +7,8 @@ class IMU {
     virtual float accelerationX(); // mg
     virtual float accelerationY(); // mg
     virtual float accelerationZ(); // mg
+
+    virtual float gyroX();
+    virtual float gyroY();
+    virtual float gyroZ();
 };
