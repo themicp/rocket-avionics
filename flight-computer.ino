@@ -1,8 +1,8 @@
 #include "Wire.h"
-#include "BMP280.h"
+#include "BMP280_API.h"
 #include "MPU9250_API.h"
 
-BMP280 *pressureSensor;
+BMP280_API *pressureSensor;
 MPU9250_API *imuSensor;
 
 void setup()
