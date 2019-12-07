@@ -18,6 +18,10 @@ class MPU9250_API: public IMU {
     float gyroY();
     float gyroZ();
 
+    float magX();
+    float magY();
+    float magZ();
+
   private:
     MPU9250_API();
     void readSensorData();

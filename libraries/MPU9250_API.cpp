@@ -90,6 +90,21 @@ float MPU9250_API::gyroZ() {
   return sensor.gz;
 }
 
+float MPU9250_API::magX() {
+  readSensorData();
+  return sensor.mx;
+}
+
+float MPU9250_API::magY() {
+  readSensorData();
+  return sensor.my;
+}
+
+float MPU9250_API::magZ() {
+  readSensorData();
+  return sensor.mz;
+}
+
 MPU9250_API::MPU9250_API() {
   byte c = sensor.readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);
 
