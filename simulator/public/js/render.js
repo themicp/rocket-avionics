@@ -89,7 +89,7 @@ function animate() {
 animate()
 
 setRoll = (degrees) => {
-  rocket.rotation.y = degrees * Math.PI / 180
+  rocket.rotation.z = degrees * Math.PI / 180
 }
 
 setPitch = (degrees) => {
@@ -97,5 +97,5 @@ setPitch = (degrees) => {
 }
 
 setYaw = (degrees) => {
-  rocket.rotation.z = degrees * Math.PI / 180
+  rocket.rotation.y = degrees * Math.PI / 180
 }
