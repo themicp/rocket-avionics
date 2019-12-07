@@ -1,8 +1,6 @@
 #include "Wire.h"
-#include "BMP280_API.h"
 #include "MPU9250_API.h"
 
-BMP280_API *pressureSensor;
 MPU9250_API *imuSensor;
 
 void setup()
@@ -11,7 +9,6 @@ void setup()
 
   Wire.begin();
 
-  pressureSensor = &(pressureSensor->getInstance());
   imuSensor = &(imuSensor->getInstance());
 }
 
@@ -24,5 +21,5 @@ void loop()
   Serial.print(imuSensor->roll());
   Serial.println();
 
-  delay(50);
+  delay(100);
 }
