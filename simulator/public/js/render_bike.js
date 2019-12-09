@@ -1,17 +1,22 @@
 const scene = new THREE.Scene()
-scene.background = new THREE.Color(0x555555);
+scene.background = new THREE.Color(0xbbbbbb)
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 
-const renderer = new THREE.WebGLRenderer();
-renderer.shadowMap.enabled = true;
+const renderer = new THREE.WebGLRenderer()
+renderer.shadowMap.enabled = true
 
-renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setSize(window.innerWidth, window.innerHeight)
 
-document.body.appendChild( renderer.domElement );
+document.body.appendChild(renderer.domElement)
+
+let geometry = new THREE.PlaneGeometry(2000, 2000, 32 )
+let material = new THREE.MeshBasicMaterial({color: 0x333333})
+let plane = new THREE.Mesh(geometry, material)
+plane.rotateX(- Math.PI / 2)
+scene.add(plane)
 
 moto = null
-var loader = new THREE.GLTFLoader();
-
+let loader = new THREE.GLTFLoader()
 loader.load(
   '/models/motorcycle.gltf',
   (object) => {
@@ -26,14 +31,13 @@ loader.load(
   }
 )
 
-const light = new THREE.SpotLight(0xffffff);
-light.position.set( 0, 140, 150 );
-light.rotation.x = -30 * Math.PI/180
-scene.add( light );
+const light = new THREE.SpotLight(0xffffff, 4)
+light.position.set( 0, 180, 50 )
+scene.add(light)
 
-camera.position.z = 150
-camera.position.y = 140
-camera.rotation.x = -30 * Math.PI/180
+camera.position.z = 160
+camera.position.y = 180
+camera.rotation.x = -40 * Math.PI/180
 camera.position.x = 0
 
 function animate() {
@@ -42,12 +46,19 @@ function animate() {
 }
 animate()
 
+maxAngle = 0
 setRoll = (degrees) => {
   moto.rotation.z = degrees * Math.PI / 180
+
+  currentAngle = Math.abs(parseFloat(degrees))
+  if (currentAngle > maxAngle) {
+    maxAngle = currentAngle
+  }
+  document.getElementsByTagName('pre')[0].innerHTML = `Max Angle: ${maxAngle.toFixed(0)}&#176; \nCurrent Angle: ${currentAngle.toFixed(0)}&#176;`
 }
 
 setPitch = (degrees) => {
-  //moto.rotation.x = degrees * Math.PI / 180
+  moto.rotation.x = degrees * Math.PI / 180
 }
 
 setYaw = (degrees) => {
