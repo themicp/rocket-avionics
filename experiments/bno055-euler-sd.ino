@@ -4,7 +4,8 @@
 #include "BNO055_API.h"
 
 BNO055_API *imuSensor;
-File imuLogs;
+String imuLogsFilename = "imulogs";
+File imuLogsFile;
 
 void setup()
 {
@@ -15,6 +16,11 @@ void setup()
     while(1);
   }
   Serial.println("SD initialization done.");
+
+  if (SD.exists(imuLogsFilename)) {
+    Serial.println("Removing previous logfile.");
+    SD.remove(imuLogsFilename);
+  }
 
   Wire.begin();
 
@@ -27,10 +33,10 @@ void loop()
   String dataString = String(millis()) + "," + String(imuSensor->pitch()) + "," + String(imuSensor->yaw()) + "," + String(imuSensor->roll()) + ",";
   Serial.println(dataString);
 
-  imuLogs = SD.open("imuLogs.txt", FILE_WRITE);
-  if (imuLogs) {
-    imuLogs.println(dataString);
-    imuLogs.close();
+  imuLogsFile = SD.open(imuLogsFilename, FILE_WRITE);
+  if (imuLogsFile) {
+    imuLogsFile.println(dataString);
+    imuLogsFile.close();
   } else {
     Serial.println("Error opening logfile.");
   }
