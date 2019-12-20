@@ -1,4 +1,3 @@
-#include "Arduino.h"
 #include "Telemetry.h"
 
 static Telemetry& Telemetry::getInstance() {
