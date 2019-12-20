@@ -5,13 +5,20 @@
 
 Telemetry telemetry = Telemetry::getInstance();
 
+FSM::FSM(IMU& imu) {}
+
 void FSM::process_event(FSM::EVENT event) {
   telemetry.send("FSM Event: " + String(event));
 
   STATE previousState = state;
   switch (event) {
+    case SETUP_COMPLETE:
+      if (state == SETUP) {
+        state = IDLE;
+      }
+      break;
     case INIT_CALIBRATION:
-      if (state == SETUP or state == READY) {
+      if (state == IDLE or state == READY) {
         state = CALIBRATION;
       }
       break;
@@ -54,7 +61,15 @@ void FSM::onSetup() {
     Wire.begin();
     telemetry.send("Wire begin");
   }
+
+  telemetry.send("Setting up IMU..");
+  imu.setup();
+  telemetry.send("IMU setup complete.");
+
+  process_event(SETUP_COMPLETE);
 }
+
+void FSM::onIDLE() {}
 
 void FSM::onCalibration() {
   telemetry.send("cal");
@@ -92,6 +107,9 @@ void FSM::runCurrentState() {
   switch (state) {
     case SETUP:
       onSetup();
+      break;
+    case IDLE:
+      onIDLE();
       break;
     case CALIBRATION:
       onCalibration();
