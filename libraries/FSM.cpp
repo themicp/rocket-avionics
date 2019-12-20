@@ -1,11 +1,11 @@
-#include "Arduino.h"
-#include "Wire.h"
 #include "FSM.h"
-#include "Telemetry.h"
 
 Telemetry telemetry = Telemetry::getInstance();
 
-FSM::FSM(IMU& imu) {}
+FSM::FSM(IMU* imuSensor, Altimeter* altimeter) {
+  this->imuSensor = imuSensor;
+  this->altimeter = altimeter;
+}
 
 void FSM::process_event(FSM::EVENT event) {
   telemetry.send("FSM Event: " + String(event));
@@ -63,13 +63,20 @@ void FSM::onSetup() {
   }
 
   telemetry.send("Setting up IMU..");
-  imu.setup();
+  imuSensor->setup();
   telemetry.send("IMU setup complete.");
+
+  telemetry.send("Setting up Altimeter..");
+  altimeter->setup();
+  telemetry.send("Altimeter setup complete.");
 
   process_event(SETUP_COMPLETE);
 }
 
-void FSM::onIDLE() {}
+void FSM::onIDLE() {
+  telemetry.send("Pitch: " + String(imuSensor->pitch()));
+  telemetry.send("Altitude: " + String(altimeter->altitude()));
+}
 
 void FSM::onCalibration() {
   telemetry.send("cal");

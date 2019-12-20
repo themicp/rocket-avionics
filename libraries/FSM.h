@@ -1,7 +1,11 @@
+#include "Wire.h"
+#include "Telemetry.h"
 #include "IMU.h"
+#include "Altimeter.h"
 
 class FSM {
-  IMU& imu;
+  IMU* imuSensor;
+  Altimeter* altimeter;
 
   public:
     enum STATE {SETUP, IDLE, CALIBRATION, READY, ASCENDING, APOGEE, FTS, RECOVERING};
@@ -10,7 +14,7 @@ class FSM {
     void process_event(FSM::EVENT event);
     void runCurrentState();
 
-    FSM(IMU& imu);
+    FSM(IMU* imuSensor, Altimeter* altimeter);
 
   private:
     FSM::STATE state = SETUP;
