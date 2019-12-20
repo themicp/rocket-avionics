@@ -5,7 +5,7 @@
 
 // #define BNO055_SAMPLERATE_DELAY_MS (100)
 
-Adafruit_BNO055 BNO055_API::sensor;
+Adafruit_BNO055 BNO055_API::sensor(55, 0x28);
 
 static BNO055_API& BNO055_API::getInstance() {
   static BNO055_API instance;
@@ -80,9 +80,8 @@ float BNO055_API::magZ() {
   return mag.z();
 }
 
-void BNO055_API::setup() {
-  sensor = Adafruit_BNO055(-1, 0x28);
 
+void BNO055_API::setup() {
   if(!sensor.begin()) {
     while(1);
   }
