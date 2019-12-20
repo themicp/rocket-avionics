@@ -1,7 +1,7 @@
 #include "Wire.h"
 #include "BMP280_API.h"
 
-BMP280_API *pressureSensor;
+BMP280_API pressureSensor = BMP280_API::getInstance();
 
 void setup()
 {
@@ -9,14 +9,14 @@ void setup()
 
   Wire.begin();
 
-  pressureSensor = &(pressureSensor->getInstance());
+  pressureSensor.setup();
 }
 
 void loop()
 {
-  Serial.print(pressureSensor->pressure());
+  Serial.print(pressureSensor.pressure());
   Serial.print(",");
-  Serial.print(pressureSensor->altitude());
+  Serial.print(pressureSensor.altitude());
   Serial.println();
 
   delay(100);

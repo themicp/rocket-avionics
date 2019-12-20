@@ -1,7 +1,7 @@
 #include "Wire.h"
 #include "BNO055_API.h"
 
-BNO055_API *imuSensor;
+BNO055_API imuSensor = BNO055_API::getInstance();
 
 void setup()
 {
@@ -9,16 +9,16 @@ void setup()
 
   Wire.begin();
 
-  imuSensor = &(imuSensor->getInstance());
+  imuSensor.setup();
 }
 
 void loop()
 {
-  Serial.print(imuSensor->pitch());
+  Serial.print(imuSensor.pitch());
   Serial.print(",");
-  Serial.print(imuSensor->yaw());
+  Serial.print(imuSensor.yaw());
   Serial.print(",");
-  Serial.print(imuSensor->roll());
+  Serial.print(imuSensor.roll());
   Serial.println();
 
   delay(100);
