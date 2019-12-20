@@ -5,12 +5,12 @@
 
 // #define BNO055_SAMPLERATE_DELAY_MS (100)
 
+Adafruit_BNO055 BNO055_API::sensor;
+
 static BNO055_API& BNO055_API::getInstance() {
   static BNO055_API instance;
   return instance;
 }
-
-Adafruit_BNO055 BNO055_API::sensor = Adafruit_BNO055(-1, 0x28);
 
 void BNO055_API::readSensorData() {
   // TODO: fix units
@@ -80,14 +80,15 @@ float BNO055_API::magZ() {
   return mag.z();
 }
 
-BNO055_API::BNO055_API() {
+void BNO055_API::setup() {
+  sensor = Adafruit_BNO055(-1, 0x28);
+
   if(!sensor.begin()) {
-    Serial.print("No BNO055 detected. Check your wiring or I2C ADDR!");
     while(1);
   }
-
-  delay(1000);
 
   // TODO: do we need this?
   sensor.setExtCrystalUse(true);
 }
+
+BNO055_API::BNO055_API() {}

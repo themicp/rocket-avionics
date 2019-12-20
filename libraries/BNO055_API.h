@@ -23,6 +23,8 @@ class BNO055_API: public IMU {
     float magY();
     float magZ();
 
+    void setup();
+
   private:
     BNO055_API();
     void readSensorData();
