@@ -4,8 +4,9 @@
 Telemetry telemetry = Telemetry::getInstance();
 
 #define LAUNCH_AGL_THRESHOLD 50 // meters
-#define LAUNCH_ACCELERATION_THRESHOLD 4 // g
+#define LAUNCH_ACCELERATION_THRESHOLD 3 // g
 #define TIME_TO_APOGEE 10 // s
+#define GRAVITY 9.81 // m/s^2 -- update on other planets
 
 // TODO: add transition from ASCENDING to READY (for false positive launche detection)
 
@@ -101,7 +102,7 @@ void FSM::onCalibration() {
 
 void FSM::onReady() {
   if (altimeter->agl() > LAUNCH_AGL_THRESHOLD or
-      imuSensor->accelerationX() > LAUNCH_ACCELERATION_THRESHOLD) {
+      imuSensor->accelerationX() / GRAVITY > LAUNCH_ACCELERATION_THRESHOLD) {
     launchTime = millis();
     process_event(LAUNCHED);
   }
