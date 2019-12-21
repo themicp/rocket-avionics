@@ -15,4 +15,5 @@ class IMU {
     virtual float gyroZ();
 
     virtual void setup();
+    virtual void calibrate();
 };
