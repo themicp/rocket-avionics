@@ -89,7 +89,7 @@ void BNO055_API::calibrate() {
 
 void BNO055_API::setup() {
   // Relative heading -- no magnetometer
-  if(!sensor.begin(Adafruit_BNO055::OPERATION_MODE_IMUPLUS)) {
+  if(!sensor.begin(Adafruit_BNO055::OPERATION_MODE_ACCGYRO)) {
     while(1);
   }
 
