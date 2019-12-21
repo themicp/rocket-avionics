@@ -1,5 +1,4 @@
 #include <Adafruit_BNO055.h>
-#include <utility/imumaths.h>
 #include "IMU.h"
 
 class BNO055_API: public IMU {
