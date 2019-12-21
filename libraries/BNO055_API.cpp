@@ -47,7 +47,7 @@ float BNO055_API::accelerationY() {
 
 float BNO055_API::accelerationZ() {
   readSensorData();
-  return acc.x();
+  return acc.z();
 }
 
 float BNO055_API::gyroX() {
