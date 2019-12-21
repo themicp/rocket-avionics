@@ -43,7 +43,7 @@ void BMP280_API::calibrate() {
     Adafruit_BMP280::MODE_NORMAL,
     Adafruit_BMP280::SAMPLING_X16,
     Adafruit_BMP280::SAMPLING_X16,
-    Adafruit_BMP280::FILTER_X16, // TODO: verify that value
+    Adafruit_BMP280::FILTER_X2, // TODO: verify that value
     Adafruit_BMP280::STANDBY_MS_1);
 
   setGroundLevel();
