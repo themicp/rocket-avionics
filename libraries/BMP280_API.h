@@ -9,9 +9,16 @@ class BMP280_API: public Altimeter {
     static BMP280_API& getInstance();
     float altitude();
     float pressure();
+    float agl();
+
+    float getGroundLevel();
 
     void setup();
+    void calibrate();
 
   private:
     BMP280_API();
+
+    float groundLevel = 0;
+    void setGroundLevel();
 };

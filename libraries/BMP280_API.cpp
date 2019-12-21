@@ -20,11 +20,33 @@ float BMP280_API::pressure() {
   return sensor.readPressure();
 }
 
+float BMP280_API::agl() {
+  return altitude() - groundLevel;
+}
+
+void BMP280_API::setGroundLevel() {
+  groundLevel = sensor.readAltitude();
+}
+
+float BMP280_API::getGroundLevel() {
+  return groundLevel;
+}
 
 void BMP280_API::setup() {
   if (!sensor.begin()) {
     while(1); //Freeze
   }
+}
+
+void BMP280_API::calibrate() {
+  sensor.setSampling(
+    Adafruit_BMP280::MODE_NORMAL,
+    Adafruit_BMP280::SAMPLING_X16,
+    Adafruit_BMP280::SAMPLING_X16,
+    Adafruit_BMP280::FILTER_X16, // TODO: verify that value
+    Adafruit_BMP280::STANDBY_MS_1);
+
+  setGroundLevel();
 }
 
 BMP280_API::BMP280_API() {}
