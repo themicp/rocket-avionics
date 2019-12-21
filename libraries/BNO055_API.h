@@ -24,6 +24,7 @@ class BNO055_API: public IMU {
     float magZ();
 
     void setup();
+    void calibrate();
 
   private:
     BNO055_API();

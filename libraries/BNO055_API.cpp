@@ -80,6 +80,14 @@ float BNO055_API::magZ() {
   return mag.z();
 }
 
+void BNO055_API::calibrate() {
+  uint8_t system, gyro, accel, mag;
+  system = gyro = accel = mag = 0;
+
+  while (gyro != 3 or accel != 3 or mag != 3) {
+    sensor.getCalibration(&system, &gyro, &accel, &mag);
+  }
+}
 
 void BNO055_API::setup() {
   if(!sensor.begin()) {
