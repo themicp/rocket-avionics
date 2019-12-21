@@ -73,10 +73,7 @@ void FSM::onSetup() {
   process_event(SETUP_COMPLETE);
 }
 
-void FSM::onIDLE() {
-  telemetry.send("Pitch: " + String(imuSensor->pitch()));
-  telemetry.send("Altitude: " + String(altimeter->altitude()));
-}
+void FSM::onIDLE() {}
 
 void FSM::onCalibration() {
   telemetry.send("Altimeter: calibrating..");
@@ -91,7 +88,19 @@ void FSM::onCalibration() {
 }
 
 void FSM::onReady() {
-  telemetry.send(String(imuSensor->pitch()) + "," + String(imuSensor->yaw()) + "," + String(imuSensor->roll()) + "," + String(altimeter->agl()));
+  float values[] = {
+    altimeter->getGroundLevel(),
+    altimeter->agl(),
+    altimeter->altitude(),
+    altimeter->pressure(),
+    imuSensor->accelerationX(),
+    imuSensor->accelerationY(),
+    imuSensor->accelerationZ(),
+    imuSensor->gyroX(),
+    imuSensor->gyroY(),
+    imuSensor->gyroZ()
+  };
+  telemetry.sendValues(values, 10);
   // TODO: check BMP and IMU for acceleration and altitude change
 }
 
