@@ -79,8 +79,9 @@ void FSM::onIDLE() {
 }
 
 void FSM::onCalibration() {
-  telemetry.send("cal");
-  // TODO: calibrate sensors
+  telemetry.send("Altimeter: calibrating..");
+  altimeter->calibrate();
+  telemetry.send("Altimeter: ground level set to " + String(altimeter->getGroundLevel()) + "m");
 }
 
 void FSM::onReady() {
