@@ -3,6 +3,12 @@
 
 Telemetry telemetry = Telemetry::getInstance();
 
+#define LAUNCH_AGL_THRESHOLD 50 // meters
+#define LAUNCH_ACCELERATION_THRESHOLD 4 // g
+#define TIME_TO_APOGEE 10 // s
+
+// TODO: add transition from ASCENDING to READY (for false positive launche detection)
+
 FSM::FSM(IMU* imuSensor, Altimeter* altimeter) {
   this->imuSensor = imuSensor;
   this->altimeter = altimeter;
@@ -33,6 +39,11 @@ void FSM::process_event(FSM::EVENT event) {
         state = ASCENDING;
       }
       // TODO: FTS otherwise?
+      break;
+    case APOGEE_TIMER_TIMEOUT:
+      if (state == ASCENDING) {
+        state = APOGEE_TIMEOUT;
+      }
       break;
     case APOGEE_DETECTED:
       if (state == ASCENDING) {
@@ -89,12 +100,23 @@ void FSM::onCalibration() {
 }
 
 void FSM::onReady() {
-  // TODO: check BMP and IMU for acceleration and altitude change
+  if (altimeter->agl() > LAUNCH_AGL_THRESHOLD or
+      imuSensor->accelerationX() > LAUNCH_ACCELERATION_THRESHOLD) {
+    launchTime = millis();
+    process_event(LAUNCHED);
+  }
 }
 
 void FSM::onAscending() {
-  telemetry.send("ascending");
+  if (millis() - launchTime > TIME_TO_APOGEE * 1000) {
+    process_event(APOGEE_TIMER_TIMEOUT);
+  }
   // TODO: check BMP and IMU
+}
+
+void FSM::onApogeeTimeout() {
+  telemetry.send("apogee timeout");
+  // TODO: trigger and detect ejection charge
 }
 
 void FSM::onApogee() {
@@ -154,6 +176,9 @@ void FSM::runCurrentState() {
       break;
     case APOGEE:
       onApogee();
+      break;
+    case APOGEE_TIMEOUT:
+      onApogeeTimeout();
       break;
     case FTS:
       onFTS();
