@@ -1,4 +1,5 @@
 #include "FSM.h"
+#include "memoryUsage.h"
 
 Telemetry telemetry = Telemetry::getInstance();
 
@@ -88,19 +89,6 @@ void FSM::onCalibration() {
 }
 
 void FSM::onReady() {
-  float values[] = {
-    altimeter->getGroundLevel(),
-    altimeter->agl(),
-    altimeter->altitude(),
-    altimeter->pressure(),
-    imuSensor->accelerationX(),
-    imuSensor->accelerationY(),
-    imuSensor->accelerationZ(),
-    imuSensor->gyroX(),
-    imuSensor->gyroY(),
-    imuSensor->gyroZ()
-  };
-  telemetry.sendValues(values, 10);
   // TODO: check BMP and IMU for acceleration and altitude change
 }
 
@@ -124,9 +112,30 @@ void FSM::onRecovering() {
   // TODO: celebrate
 }
 
+
 void FSM::runCurrentState() {
-  // TODO: Send raw data in telemetry
-  telemetry.send("State: " + String(state));
+  float *values;
+  int countValues = 2;
+  values = (float*)malloc(countValues * sizeof(float));
+  values[0] = freeMemory();
+  values[1] = state;
+  if (state != SETUP and state != IDLE and state != CALIBRATION) {
+    countValues = 12;
+    values = (float*)realloc(values, countValues * sizeof(float));
+    values[2] = altimeter->getGroundLevel();
+    values[3] = altimeter->agl();
+    values[4] = altimeter->altitude();
+    values[5] = altimeter->pressure();
+    values[6] = imuSensor->accelerationX();
+    values[7] = imuSensor->accelerationY();
+    values[8] = imuSensor->accelerationZ();
+    values[9] = imuSensor->gyroX();
+    values[10] = imuSensor->gyroY();
+    values[11] = imuSensor->gyroZ();
+  }
+  telemetry.sendValues(values, countValues);
+  free(values);
+
   switch (state) {
     case SETUP:
       onSetup();
