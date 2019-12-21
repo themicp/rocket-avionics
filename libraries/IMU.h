@@ -6,9 +6,9 @@ class IMU {
     virtual float yaw(); // degrees
     virtual float roll(); // degrees
 
-    virtual float accelerationX(); // mg
-    virtual float accelerationY(); // mg
-    virtual float accelerationZ(); // mg
+    virtual float accelerationX(); // m/s^2
+    virtual float accelerationY(); // m/s^2
+    virtual float accelerationZ(); // m/s^2
 
     virtual float gyroX();
     virtual float gyroY();
