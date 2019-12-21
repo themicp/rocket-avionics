@@ -82,10 +82,16 @@ void FSM::onCalibration() {
   telemetry.send("Altimeter: calibrating..");
   altimeter->calibrate();
   telemetry.send("Altimeter: ground level set to " + String(altimeter->getGroundLevel()) + "m");
+
+  telemetry.send("IMU: calibrating..");
+  imuSensor->calibrate();
+  telemetry.send("IMU: calibrated.");
+
+  process_event(CALIBRATION_COMPLETE);
 }
 
 void FSM::onReady() {
-  telemetry.send("ready");
+  telemetry.send(String(imuSensor->pitch()) + "," + String(imuSensor->yaw()) + "," + String(imuSensor->roll()) + "," + String(altimeter->agl()));
   // TODO: check BMP and IMU for acceleration and altitude change
 }
 
