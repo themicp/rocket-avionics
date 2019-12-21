@@ -84,13 +84,12 @@ void BNO055_API::calibrate() {
   uint8_t system, gyro, accel, mag;
   system = gyro = accel = mag = 0;
 
-  while (gyro != 3 or accel != 3 or mag != 3) {
-    sensor.getCalibration(&system, &gyro, &accel, &mag);
-  }
+  while (sensor.isFullyCalibrated()) {}
 }
 
 void BNO055_API::setup() {
-  if(!sensor.begin()) {
+  // Relative heading -- no magnetometer
+  if(!sensor.begin(Adafruit_BNO055::OPERATION_MODE_IMUPLUS)) {
     while(1);
   }
 
