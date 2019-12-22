@@ -164,7 +164,6 @@ void FSM::runCurrentState() {
       String(imuSensor->gyroX()) + "," +
       String(imuSensor->gyroY()) + "," +
       String(imuSensor->gyroZ());
-
   }
   telemetry.send(message);
 
