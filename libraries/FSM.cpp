@@ -1,5 +1,6 @@
 #include "FSM.h"
 #include "memoryUsage.h"
+#include "utils.h"
 
 Telemetry telemetry = Telemetry::getInstance();
 
@@ -146,26 +147,26 @@ void FSM::onRecovering() {
 
 
 void FSM::runCurrentState() {
-  float *values;
-  int countValues = 2;
-  values = (float*)malloc(countValues * sizeof(float));
+  int count_values = 2;
+  float *values = (float*)malloc(count_values * sizeof(float));
   values[0] = freeMemory();
-  values[1] = (float)state; // TODO: add as string
+  values[1] = (float)state;
   if (state != STATE::SETUP and state != STATE::IDLE and state != STATE::CALIBRATION) {
-    countValues = 12;
-    values = (float*)realloc(values, countValues * sizeof(float));
-    values[2] = altimeter->getGroundLevel();
-    values[3] = altimeter->agl();
-    values[4] = altimeter->altitude();
-    values[5] = altimeter->pressure();
-    values[6] = imuSensor->accelerationX();
-    values[7] = imuSensor->accelerationY();
-    values[8] = imuSensor->accelerationZ();
-    values[9] = imuSensor->gyroX();
-    values[10] = imuSensor->gyroY();
-    values[11] = imuSensor->gyroZ();
+    float extra_values[] = {
+      altimeter->getGroundLevel(),
+      altimeter->agl(),
+      altimeter->altitude(),
+      altimeter->pressure(),
+      imuSensor->accelerationX(),
+      imuSensor->accelerationY(),
+      imuSensor->accelerationZ(),
+      imuSensor->gyroX(),
+      imuSensor->gyroY(),
+      imuSensor->gyroZ()
+    };
+    count_values = array_extend(values, count_values, extra_values);
   }
-  telemetry.sendValues(values, countValues);
+  telemetry.sendValues(values, count_values);
   free(values);
 
   switch (state) {
