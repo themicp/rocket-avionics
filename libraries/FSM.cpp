@@ -77,6 +77,11 @@ void FSM::process_event(EVENT event) {
   } else {
     telemetry.send("Illegal state transition from state " + state_to_str(state) + " with event " + event_to_str(event));
   }
+
+  if (event == EVENT::LAUNCHED) {
+    // TODO: not the best place to do that
+    launchTime = millis();
+  }
 }
 
 void FSM::onSetup() {
@@ -113,7 +118,6 @@ void FSM::onCalibration() {
 void FSM::onReady() {
   if (altimeter->agl() > LAUNCH_AGL_THRESHOLD or
       imuSensor->accelerationX() / GRAVITY > LAUNCH_ACCELERATION_THRESHOLD) {
-    launchTime = millis();
     process_event(EVENT::LAUNCHED);
   }
 }
