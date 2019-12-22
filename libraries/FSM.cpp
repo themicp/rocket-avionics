@@ -10,62 +10,71 @@ Telemetry telemetry = Telemetry::getInstance();
 
 // TODO: add transition from ASCENDING to READY (for false positive launche detection)
 
+String state_to_str(STATE state) {
+  String names[] = {"INVALID_STATE", "SETUP", "IDLE", "CALIBRATION", "READY", "ASCENDING", "APOGEE_TIMEOUT", "APOGEE", "FTS", "RECOVERING"};
+  if ((int)state >= (int)STATE::Count or (int)state < 0) {
+    return "Unknown";
+  }
+  return names[(int)state];
+}
+
+String event_to_str(EVENT event) {
+  String names[] = {"SETUP_COMPLETE", "INIT_CALIBRATION", "CALIBRATION_COMPLETE", "LAUNCHED", "APOGEE_TIMER_TIMEOUT", "APOGEE_DETECTED", "TRIGGER_FTS", "CHUTE_EJECTED"};
+  if ((int)event >= (int)EVENT::Count or (int)event < 0) {
+    return "Unknown";
+  }
+  return names[(int)event];
+}
+
 FSM::FSM(IMU* imuSensor, Altimeter* altimeter) {
   this->imuSensor = imuSensor;
   this->altimeter = altimeter;
+
+  Transition flight_state_transitions[] = {
+    Transition(STATE::SETUP, EVENT::SETUP_COMPLETE, STATE::IDLE),
+    Transition(STATE::IDLE, EVENT::INIT_CALIBRATION, STATE::CALIBRATION),
+    Transition(STATE::READY, EVENT::INIT_CALIBRATION, STATE::CALIBRATION),
+    Transition(STATE::CALIBRATION, EVENT::CALIBRATION_COMPLETE, STATE::READY),
+    Transition(STATE::READY, EVENT::LAUNCHED, STATE::ASCENDING),
+    Transition(STATE::ASCENDING, EVENT::APOGEE_TIMER_TIMEOUT, STATE::APOGEE_TIMEOUT),
+    Transition(STATE::ASCENDING, EVENT::APOGEE_DETECTED, STATE::APOGEE),
+    Transition(STATE::APOGEE, EVENT::CHUTE_EJECTED, STATE::RECOVERING),
+    Transition(STATE::FTS, EVENT::CHUTE_EJECTED, STATE::RECOVERING),
+
+    // FTS from all states
+    Transition(STATE::SETUP, EVENT::TRIGGER_FTS, STATE::FTS),
+    Transition(STATE::IDLE, EVENT::TRIGGER_FTS, STATE::FTS),
+    Transition(STATE::CALIBRATION, EVENT::TRIGGER_FTS, STATE::FTS),
+    Transition(STATE::READY, EVENT::TRIGGER_FTS, STATE::FTS),
+    Transition(STATE::ASCENDING, EVENT::TRIGGER_FTS, STATE::FTS),
+    Transition(STATE::APOGEE_TIMEOUT, EVENT::TRIGGER_FTS, STATE::FTS),
+    Transition(STATE::APOGEE, EVENT::TRIGGER_FTS, STATE::FTS),
+    Transition(STATE::RECOVERING, EVENT::TRIGGER_FTS, STATE::FTS)
+  };
+
+  register_state_transitions(flight_state_transitions);
 }
 
-void FSM::process_event(FSM::EVENT event) {
-  telemetry.send("FSM Event: " + String(event));
-
-  STATE previousState = state;
-  switch (event) {
-    case SETUP_COMPLETE:
-      if (state == SETUP) {
-        state = IDLE;
-      }
-      break;
-    case INIT_CALIBRATION:
-      if (state == IDLE or state == READY) {
-        state = CALIBRATION;
-      }
-      break;
-    case CALIBRATION_COMPLETE:
-      if (state == CALIBRATION) {
-        state = READY;
-      }
-      break;
-    case LAUNCHED:
-      if (state == READY) {
-        state = ASCENDING;
-      }
-      // TODO: FTS otherwise?
-      break;
-    case APOGEE_TIMER_TIMEOUT:
-      if (state == ASCENDING) {
-        state = APOGEE_TIMEOUT;
-      }
-      break;
-    case APOGEE_DETECTED:
-      if (state == ASCENDING) {
-        state = APOGEE;
-      }
-      break;
-    case TRIGGER_FTS:
-      // Allow FTS from any state.
-      state = FTS;
-      break;
-    case CHUTE_EJECTED:
-      if (state == APOGEE or state == FTS) {
-        state = RECOVERING;
-      }
-      break;
-    default:
-      telemetry.send("Invalid event: " + String(event));
+template<size_t N>
+void FSM::register_state_transitions(Transition (&transitions)[N]) {
+  for (int i = 0; i < (int)STATE::Count; ++i) {
+    for (int j = 0; j < (int)EVENT::Count; ++j) {
+      state_transitions[i][j] = STATE::INVALID_STATE;
+    }
   }
 
-  if (previousState == state) {
-    telemetry.send("Illegal state transition from state " + String(state) + " with event " + String(event));
+  for (int i = 0; i < N; ++i) {
+    state_transitions[(int)transitions[i].src_state][(int)transitions[i].event] = transitions[i].dst_state;
+  }
+}
+
+void FSM::process_event(EVENT event) {
+  telemetry.send("FSM Event: " + event_to_str(event));
+
+  if (state_transitions[(int)state][(int)event] != STATE::INVALID_STATE) {
+    state = state_transitions[(int)state][(int)event];
+  } else {
+    telemetry.send("Illegal state transition from state " + state_to_str(state) + " with event " + event_to_str(event));
   }
 }
 
@@ -83,7 +92,7 @@ void FSM::onSetup() {
   altimeter->setup();
   telemetry.send("Altimeter setup complete.");
 
-  process_event(SETUP_COMPLETE);
+  process_event(EVENT::SETUP_COMPLETE);
 }
 
 void FSM::onIDLE() {}
@@ -97,20 +106,20 @@ void FSM::onCalibration() {
   imuSensor->calibrate();
   telemetry.send("IMU: calibrated.");
 
-  process_event(CALIBRATION_COMPLETE);
+  process_event(EVENT::CALIBRATION_COMPLETE);
 }
 
 void FSM::onReady() {
   if (altimeter->agl() > LAUNCH_AGL_THRESHOLD or
       imuSensor->accelerationX() / GRAVITY > LAUNCH_ACCELERATION_THRESHOLD) {
     launchTime = millis();
-    process_event(LAUNCHED);
+    process_event(EVENT::LAUNCHED);
   }
 }
 
 void FSM::onAscending() {
   if (millis() - launchTime > TIME_TO_APOGEE * 1000) {
-    process_event(APOGEE_TIMER_TIMEOUT);
+    process_event(EVENT::APOGEE_TIMER_TIMEOUT);
   }
   // TODO: check BMP and IMU
 }
@@ -141,8 +150,8 @@ void FSM::runCurrentState() {
   int countValues = 2;
   values = (float*)malloc(countValues * sizeof(float));
   values[0] = freeMemory();
-  values[1] = state;
-  if (state != SETUP and state != IDLE and state != CALIBRATION) {
+  values[1] = (float)state; // TODO: add as string
+  if (state != STATE::SETUP and state != STATE::IDLE and state != STATE::CALIBRATION) {
     countValues = 12;
     values = (float*)realloc(values, countValues * sizeof(float));
     values[2] = altimeter->getGroundLevel();
@@ -160,31 +169,31 @@ void FSM::runCurrentState() {
   free(values);
 
   switch (state) {
-    case SETUP:
+    case STATE::SETUP:
       onSetup();
       break;
-    case IDLE:
+    case STATE::IDLE:
       onIDLE();
       break;
-    case CALIBRATION:
+    case STATE::CALIBRATION:
       onCalibration();
       break;
-    case READY:
+    case STATE::READY:
       onReady();
       break;
-    case ASCENDING:
+    case STATE::ASCENDING:
       onAscending();
       break;
-    case APOGEE:
+    case STATE::APOGEE:
       onApogee();
       break;
-    case APOGEE_TIMEOUT:
+    case STATE::APOGEE_TIMEOUT:
       onApogeeTimeout();
       break;
-    case FTS:
+    case STATE::FTS:
       onFTS();
       break;
-    case RECOVERING:
+    case STATE::RECOVERING:
       onRecovering();
       break;
   }
