@@ -12,16 +12,4 @@ void Telemetry::send(String data) {
   }
 }
 
-void Telemetry::sendValues(float *values, int N) {
-  String message = "";
-  for (int i = 0; i < N; ++i) {
-    message += String(values[i]);
-    if (i != N - 1) {
-      message += ",";
-    }
-  }
-
-  send("VALUES: " + message);
-}
-
 Telemetry::Telemetry() {}

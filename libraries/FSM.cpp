@@ -147,27 +147,22 @@ void FSM::onRecovering() {
 
 
 void FSM::runCurrentState() {
-  int count_values = 2;
-  float *values = (float*)malloc(count_values * sizeof(float));
-  values[0] = freeMemory();
-  values[1] = (float)state;
+  String message = String(freeMemory()) + "," + state_to_str(state);
   if (state != STATE::SETUP and state != STATE::IDLE and state != STATE::CALIBRATION) {
-    float extra_values[] = {
-      altimeter->getGroundLevel(),
-      altimeter->agl(),
-      altimeter->altitude(),
-      altimeter->pressure(),
-      imuSensor->accelerationX(),
-      imuSensor->accelerationY(),
-      imuSensor->accelerationZ(),
-      imuSensor->gyroX(),
-      imuSensor->gyroY(),
-      imuSensor->gyroZ()
-    };
-    count_values = array_extend(values, count_values, extra_values);
+    message += "," +
+      String(altimeter->getGroundLevel()) + "," +
+      String(altimeter->agl()) + "," +
+      String(altimeter->altitude()) + "," +
+      String(altimeter->pressure()) + "," +
+      String(imuSensor->accelerationX()) + "," +
+      String(imuSensor->accelerationY()) + "," +
+      String(imuSensor->accelerationZ()) + "," +
+      String(imuSensor->gyroX()) + "," +
+      String(imuSensor->gyroY()) + "," +
+      String(imuSensor->gyroZ());
+
   }
-  telemetry.sendValues(values, count_values);
-  free(values);
+  telemetry.send(message);
 
   switch (state) {
     case STATE::SETUP:
