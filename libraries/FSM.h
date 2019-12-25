@@ -21,6 +21,7 @@ class Transition {
 };
 
 class FSM {
+  Telemetry* telemetry;
   IMU* imuSensor;
   Altimeter* altimeter;
   int launchTime;
@@ -32,7 +33,7 @@ class FSM {
     void process_event(EVENT event);
     void runCurrentState();
 
-    FSM(IMU* imuSensor, Altimeter* altimeter);
+    FSM(Telemetry* telemetry, IMU* imuSensor, Altimeter* altimeter);
 
   private:
     STATE state = STATE::SETUP;

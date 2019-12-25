@@ -1,8 +1,5 @@
 #include "FSM.h"
 #include "memoryUsage.h"
-#include "utils.h"
-
-Telemetry telemetry = Telemetry::getInstance();
 
 #define LAUNCH_AGL_THRESHOLD 50 // meters
 #define LAUNCH_ACCELERATION_THRESHOLD 3 // g
@@ -27,10 +24,11 @@ String event_to_str(EVENT event) {
   return names[(int)event];
 }
 
-FSM::FSM(IMU* imuSensor, Altimeter* altimeter) {
-  this->imuSensor = imuSensor;
-  this->altimeter = altimeter;
-
+FSM::FSM(Telemetry* telemetry, IMU* imuSensor, Altimeter* altimeter)
+  : telemetry(telemetry)
+  , imuSensor(imuSensor)
+  , altimeter(altimeter)
+{
   Transition flight_state_transitions[] = {
     Transition(STATE::SETUP, EVENT::SETUP_COMPLETE, STATE::IDLE),
     Transition(STATE::IDLE, EVENT::INIT_CALIBRATION, STATE::CALIBRATION),
@@ -70,12 +68,12 @@ void FSM::register_state_transitions(Transition (&transitions)[N]) {
 }
 
 void FSM::process_event(EVENT event) {
-  telemetry.send("FSM Event: " + event_to_str(event));
+  telemetry->send("FSM Event: " + event_to_str(event));
 
   if (state_transitions[(int)state][(int)event] != STATE::INVALID_STATE) {
     state = state_transitions[(int)state][(int)event];
   } else {
-    telemetry.send("Illegal state transition from state " + state_to_str(state) + " with event " + event_to_str(event));
+    telemetry->send("Illegal state transition from state " + state_to_str(state) + " with event " + event_to_str(event));
   }
 
   if (event == EVENT::LAUNCHED) {
@@ -85,18 +83,19 @@ void FSM::process_event(EVENT event) {
 }
 
 void FSM::onSetup() {
-  if (TWCR == 0) {
-    Wire.begin();
-    telemetry.send("Wire begin");
-  }
+  telemetry->setup();
+  telemetry->send("Hello!");
 
-  telemetry.send("Setting up IMU..");
+  Wire.begin();
+  telemetry->send("Wire begin");
+
+  telemetry->send("Setting up IMU..");
   imuSensor->setup();
-  telemetry.send("IMU setup complete.");
+  telemetry->send("IMU setup complete.");
 
-  telemetry.send("Setting up Altimeter..");
+  telemetry->send("Setting up Altimeter..");
   altimeter->setup();
-  telemetry.send("Altimeter setup complete.");
+  telemetry->send("Altimeter setup complete.");
 
   process_event(EVENT::SETUP_COMPLETE);
 }
@@ -104,13 +103,13 @@ void FSM::onSetup() {
 void FSM::onIDLE() {}
 
 void FSM::onCalibration() {
-  telemetry.send("Altimeter: calibrating..");
+  telemetry->send("Altimeter: calibrating..");
   altimeter->calibrate();
-  telemetry.send("Altimeter: ground level set to " + String(altimeter->getGroundLevel()) + "m");
+  telemetry->send("Altimeter: ground level set to " + String(altimeter->getGroundLevel()) + "m");
 
-  telemetry.send("IMU: calibrating..");
+  telemetry->send("IMU: calibrating..");
   imuSensor->calibrate();
-  telemetry.send("IMU: calibrated.");
+  telemetry->send("IMU: calibrated.");
 
   process_event(EVENT::CALIBRATION_COMPLETE);
 }
@@ -130,22 +129,22 @@ void FSM::onAscending() {
 }
 
 void FSM::onApogeeTimeout() {
-  telemetry.send("apogee timeout");
+  telemetry->send("apogee timeout");
   // TODO: trigger and detect ejection charge
 }
 
 void FSM::onApogee() {
-  telemetry.send("apogee");
+  telemetry->send("apogee");
   // TODO: trigger and detect ejection charge
 }
 
 void FSM::onFTS() {
-  telemetry.send("fts");
+  telemetry->send("fts");
   // TODO: trigger and detect ejection charge
 }
 
 void FSM::onRecovering() {
-  telemetry.send("recovering");
+  telemetry->send("recovering");
   // TODO: celebrate
 }
 
@@ -165,7 +164,7 @@ void FSM::runCurrentState() {
       String(imuSensor->gyroY()) + "," +
       String(imuSensor->gyroZ());
   }
-  telemetry.send(message);
+  telemetry->send(message);
 
   switch (state) {
     case STATE::SETUP:
