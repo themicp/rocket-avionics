@@ -8,16 +8,27 @@ Telemetry& Telemetry::getInstance() {
 }
 
 void Telemetry::send(String data) {
+  if (!init) {
+    return;
+  }
+
   if (Serial) {
     int messageLength = data.length();
     Serial.println("TELEMETRY (" + String(messageLength) + "): " + data);
   }
+
+  char stream[data.length() + 1];
+  data.toCharArray(stream, data.length() + 1);
+  stream[data.length()] = '\0';
+  rf95.send((uint8_t *)stream, sizeof(stream));
+  rf95.waitPacketSent();
 }
 
 void Telemetry::setup() {
   if (!rf95.init()) {
     while(1);
   }
+  init = true;
 }
 
 Telemetry::Telemetry() {}
