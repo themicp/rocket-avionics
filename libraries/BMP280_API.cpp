@@ -7,7 +7,7 @@
 
 Adafruit_BMP280 BMP280_API::sensor;
 
-static BMP280_API& BMP280_API::getInstance() {
+BMP280_API& BMP280_API::getInstance() {
   static BMP280_API instance;
   return instance;
 }

@@ -7,7 +7,7 @@
 
 Adafruit_BNO055 BNO055_API::sensor(55, 0x28);
 
-static BNO055_API& BNO055_API::getInstance() {
+BNO055_API& BNO055_API::getInstance() {
   static BNO055_API instance;
   return instance;
 }
