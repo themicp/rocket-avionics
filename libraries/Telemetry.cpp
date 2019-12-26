@@ -21,7 +21,6 @@ void Telemetry::send(String data) {
   data.toCharArray(stream, data.length() + 1);
   stream[data.length()] = '\0';
   rf95.send((uint8_t *)stream, sizeof(stream));
-  rf95.waitPacketSent();
 }
 
 void Telemetry::setup() {
