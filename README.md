@@ -1,7 +1,5 @@
-# Useful Links
+# Rocket Avionics
 
-https://github.com/sparkfun/SparkFun_BME280_Arduino_Library
+Basic avionics system for use in rockets. Listens to data from altimeters and IMUs, logs them and uses them to detect the apogee of the rocket and deploy recovery hardware.
 
-https://learn.sparkfun.com/tutorials/mpu-9250-hookup-guide
-
-https://github.com/kriswiner/MPU9250
+Designed to be extensible and support any altimeter or IMU.
