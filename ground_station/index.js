@@ -2,21 +2,29 @@ const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
 const express = require('express')
 const WebSocket = require('ws');
-const fs = require('fs')
+const { EventEmitter } = require('events')
 const app = express()
 
 SERVER_PORT = 3000
 WS_PORT = 8080
 
-if (!process.env.PORT_PATH && !process.env.IMU_LOGS) {
-  throw new Error('Provide PORT_PATH or IMU_LOGS in env.')
+if (!process.env.PORT_PATH) {
+  throw new Error('Provide PORT_PATH in env.')
 }
 
-let parser, serialPort
-if (process.env.PORT_PATH) {
-  parser = new Readline()
-  serialPort = new SerialPort(process.env.PORT_PATH, { baudRate: 9600 })
-  serialPort.pipe(parser)
+const dataEmitter = new EventEmitter();
+const parser = new Readline()
+const serialPort = new SerialPort(process.env.PORT_PATH, { baudRate: 9600 })
+serialPort.pipe(parser)
+
+parser.on('data', (line) => {
+  dataEmitter.emit('data', line)
+})
+
+const COMMANDS = {
+  init_calibration: 1,
+  launched: 3,
+  trigger_fts: 6
 }
 
 app.use(express.static('public'))
@@ -26,20 +34,19 @@ app.listen(SERVER_PORT, () => {
 
   const wss = new WebSocket.Server({port: WS_PORT});
   wss.on('connection', (ws) => {
-    if (process.env.PORT_PATH) {
-      parser.on('data', line => {
-        [pitch, yaw, roll] = line.split(',').map(value => parseFloat(value))
-        ws.send(JSON.stringify({type: 'stream', data: {pitch, yaw, roll}}));
-      })
-    } else {
-      fs.readFile(process.env.IMU_LOGS, {encoding: 'utf-8'}, async (err, data) => {
-        if (!err) {
-          ws.send(JSON.stringify({type: 'replay', data: data.split('\n')}))
-        } else {
-          ws.send(JSON.stringify({error: 'Error reading IMU logs'}))
-          ws.close()
+    dataEmitter.on('data', line => ws.send(line))
+
+    ws.on('message', message => {
+      if (message.indexOf('COMMAND') === 0) {
+        command = message.split('COMMAND:')[1].toLowerCase()
+        if (typeof COMMANDS[command] !== 'undefined') {
+          serialPort.write(COMMANDS[command].toString(), function(err) {
+            if (err) {
+              return console.log('Error on write: ', err.message)
+            }
+          })
         }
-      })
-    }
+      }
+    })
   })
 })
