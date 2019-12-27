@@ -150,7 +150,7 @@ void FSM::onRecovering() {
 
 
 void FSM::runCurrentState() {
-  String message = String(freeMemory()) + "," + state_to_str(state);
+  String message = "RAW:" + String(millis()) + "," + String(freeMemory()) + "," + state_to_str(state);
   if (state != STATE::SETUP and state != STATE::IDLE and state != STATE::CALIBRATION) {
     message += "," +
       String(altimeter->getGroundLevel()) + "," +
