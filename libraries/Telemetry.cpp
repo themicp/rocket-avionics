@@ -30,4 +30,16 @@ void Telemetry::setup() {
   init = true;
 }
 
+bool Telemetry::messageAvailable() {
+  return rf95.available();
+}
+
+String Telemetry::receiveMessage() {
+  uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
+  uint8_t len = sizeof(buf);
+
+  rf95.recv(buf, &len);
+  return String((char*)buf);
+}
+
 Telemetry::Telemetry() {}
