@@ -7,15 +7,20 @@ BMP280_API altimeter = BMP280_API::getInstance();
 Telemetry telemetry = Telemetry::getInstance();
 FSM *fsm;
 
+#define SERIAL_DEBUG true
+#define LOOP_FREQUENCY 10 // Hz
+
 void setup() {
-  if (Serial) {
-    Serial.begin(9600);
-  }
+#if SERIAL_DEBUG
+  Serial.begin(9600);
+#endif
 
   fsm = new FSM(&telemetry, &imuSensor, &altimeter);
 }
 
 void loop() {
+  int timerStart = millis();
+
   if (telemetry.messageAvailable()) {
     String message = telemetry.receiveMessage();
     if (message.substring(0, 3).equals("CMD")) {
@@ -24,14 +29,16 @@ void loop() {
     }
   }
 
-  if (Serial) {
-    if (Serial.available()) {
-      int a = Serial.parseInt();
-      fsm->process_event((EVENT)a);
-    }
+#if SERIAL_DEBUG
+  if (Serial.available()) {
+    int a = Serial.parseInt();
+    fsm->process_event((EVENT)a);
   }
+#endif
 
   fsm->runCurrentState();
 
-  delay(30);
+  int delayTime = (1000/LOOP_FREQUENCY) - (millis() - timerStart);
+
+  delay(max(0, delayTime));
 }
