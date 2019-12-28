@@ -5,6 +5,8 @@
 
 // #define BNO055_SAMPLERATE_DELAY_MS (100)
 
+#define READ_INTERVAL (10)
+
 Adafruit_BNO055 BNO055_API::sensor(55, 0x28);
 
 BNO055_API& BNO055_API::getInstance() {
@@ -14,10 +16,16 @@ BNO055_API& BNO055_API::getInstance() {
 
 void BNO055_API::readSensorData() {
   // TODO: fix units
+  if (millis() - lastRead < READ_INTERVAL) {
+    return;
+  }
+
   euler = sensor.getVector(Adafruit_BNO055::VECTOR_EULER);
   acc = sensor.getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
   gyro = sensor.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
   mag = sensor.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);
+
+  lastRead = millis();
 }
 
 float BNO055_API::pitch() {
