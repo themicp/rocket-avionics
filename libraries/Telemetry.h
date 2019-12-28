@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "SPI.h"
 #include "RH_RF95.h"
+#include "RHReliableDatagram.h"
 
 class Telemetry {
   public:
@@ -13,5 +14,6 @@ class Telemetry {
   private:
     bool init = false;
     static RH_RF95 rf95;
+    static RHReliableDatagram rf_manager;
     Telemetry();
 };
