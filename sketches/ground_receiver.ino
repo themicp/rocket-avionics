@@ -17,8 +17,7 @@ void setup() {
   rf95.setSignalBandwidth(500000);
   rf95.setSpreadingFactor(8);
 
-  manager.setRetries(10);
-  manager.setTimeout(500);
+  manager.setRetries(15);
 }
 
 void loop() {
