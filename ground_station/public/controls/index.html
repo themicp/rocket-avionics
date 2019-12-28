@@ -25,12 +25,12 @@
         height: 100%;
         background: rgba(0, 0, 0, 0.5);
         border: none;
-        color: #fff;
-        font-size: 10px;
+        color: #aaa;
+        font-size: 12px;
         font-weight: bold;
         overflow: auto;
         box-sizing: border-box;
-        line-height: 8px;
+        line-height: 16px;
         resize: none;
       }
 
@@ -108,7 +108,7 @@
       <span>Autoscroll <input type='checkbox' checked /></span>
     </div>
     <div id='controls'>
-      <h1 id='state'></h1>
+      <h1 id='state'>Unknown State</h1>
       <div id='fts'>FTS</div>
       <div id='commands'>
         <div id='calibration' class='button'>Calibrate</div>
@@ -119,22 +119,31 @@
     <script>
       // TODO: add confirm box on FTS
       const telemetry = new Telemetry()
-      telemetry.addEventListener('data', ({detail}) => {
+      let lines = []
+      function renderLogs() {
+        serializedLogs = lines.join('\n')
         logsElement = document.getElementById('raw_logs')
-        logsElement.value += `\n${detail}`
+        logsElement.value = serializedLogs
         autoscroll = document.getElementById('logs_wrapper').querySelector("input[type='checkbox']")
         if (autoscroll.checked) {
           logsElement.scrollTop = logsElement.scrollHeight
         }
 
-        entries = detail.split(',')
-        state = entries[1]
-        document.getElementById('state').innerHTML = state
+        lastLine = lines[lines.length - 1]
+        if (lastLine.indexOf("RAW:") === 0) {
+          entries = lastLine.split(',')
+          state = entries[2]
+          document.getElementById('state').innerHTML = state
+        }
+      }
+
+      telemetry.addEventListener('data', ({detail}) => {
+        lines = lines.slice(Math.max(lines.length - 500, 0)).concat(detail)
+        renderLogs()
       })
 
       document.getElementById('calibration').onclick = () => {
         telemetry.sendCalibrate();
-        console.log('test');
       }
 
       document.getElementById('launch').onclick = () => {
