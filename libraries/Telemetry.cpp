@@ -2,6 +2,7 @@
 
 #define CLIENT_ADDRESS 1
 #define SERVER_ADDRESS 2
+#define SERIAL_DEBUG false
 
 // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
 RH_RF95 Telemetry::rf95(8, 3);
@@ -17,14 +18,15 @@ void Telemetry::send(String data) {
     return;
   }
 
-  if (Serial) {
+#if SERIAL_DEBUG
     int messageLength = data.length();
     Serial.println("TELEMETRY (" + String(messageLength) + "): " + data);
-  }
+#endif
 
   char stream[data.length() + 1];
   data.toCharArray(stream, data.length() + 1);
   stream[data.length()] = '\0';
+
   rf95.send((uint8_t *)stream, sizeof(stream));
   rf95.waitPacketSent();
   rf95.setModeRx(); // continue listening
