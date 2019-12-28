@@ -129,22 +129,18 @@ void FSM::onAscending() {
 }
 
 void FSM::onApogeeTimeout() {
-  telemetry->send("apogee timeout");
   // TODO: trigger and detect ejection charge
 }
 
 void FSM::onApogee() {
-  telemetry->send("apogee");
   // TODO: trigger and detect ejection charge
 }
 
 void FSM::onFTS() {
-  telemetry->send("fts");
   // TODO: trigger and detect ejection charge
 }
 
 void FSM::onRecovering() {
-  telemetry->send("recovering");
   // TODO: celebrate
 }
 
