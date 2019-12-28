@@ -148,15 +148,11 @@ void FSM::onRecovering() {
   // TODO: celebrate
 }
 
-
 void FSM::runCurrentState() {
-  String message = "RAW:" + String(millis()) + "," + String(freeMemory()) + "," + state_to_str(state);
+  String message = "RAW:" + String(millis()) + "," + String(freeMemory()/1000) + "," + state_to_str(state);
   if (state != STATE::SETUP and state != STATE::IDLE and state != STATE::CALIBRATION) {
     message += "," +
-      String(altimeter->getGroundLevel()) + "," +
-      String(altimeter->agl()) + "," +
-      String(altimeter->altitude()) + "," +
-      String(altimeter->pressure()) + "," +
+      String((int)altimeter->agl()) + "," +
       String(imuSensor->accelerationX()) + "," +
       String(imuSensor->accelerationY()) + "," +
       String(imuSensor->accelerationZ()) + "," +
