@@ -1,4 +1,4 @@
 *.elf
 *.hex
 node_modules/
-flight-computer.ino
+./flight-computer.ino
