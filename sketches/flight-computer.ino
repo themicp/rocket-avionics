@@ -33,5 +33,5 @@ void loop() {
 
   fsm->runCurrentState();
 
-  delay(10);
+  delay(30);
 }
