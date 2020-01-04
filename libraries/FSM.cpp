@@ -148,7 +148,7 @@ void FSM::runCurrentState() {
   String message = "RAW:" + String(millis()) + "," + String(freeMemory()/1000) + "," + state_to_str(state);
   if (state != STATE::SETUP and state != STATE::IDLE and state != STATE::CALIBRATION) {
     message += "," +
-      String((int)altimeter->agl()) + "," +
+      String(altimeter->agl()) + "," +
       String(imuSensor->accelerationX()) + "," +
       String(imuSensor->accelerationY()) + "," +
       String(imuSensor->accelerationZ()) + "," +
