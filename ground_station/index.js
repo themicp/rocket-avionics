@@ -45,20 +45,17 @@ dataEmitter.on('data', data => {
       met = +data[0]
       freeMemory = parseInt(data[1], 10)
       state = data[2].replace(/\n|\r/g, '')
-      groundLevel = data[3] ? parseFloat(data[3]) : null
-      agl = data[4] ? parseFloat(data[4]) : null
-      altitude = data[5] ? parseFloat(data[5]) : null
-      pressure = data[6] ? parseFloat(data[6]) : null
-      accX = data[7] ? parseFloat(data[7]) : null
-      accY = data[8] ? parseFloat(data[8]) : null
-      accZ = data[9] ? parseFloat(data[9]) : null
-      gyroX = data[10] ? parseFloat(data[10]) : null
-      gyroY = data[11] ? parseFloat(data[11]) : null
-      gyroZ = data[12] ? parseFloat(data[12]) : null
+      agl = data[3] ? parseFloat(data[3]) : null
+      accX = data[4] ? parseFloat(data[4]) : null
+      accY = data[5] ? parseFloat(data[5]) : null
+      accZ = data[6] ? parseFloat(data[6]) : null
+      gyroX = data[7] ? parseFloat(data[7]) : null
+      gyroY = data[8] ? parseFloat(data[8]) : null
+      gyroZ = data[9] ? parseFloat(data[9]) : null
 
       connection.query('INSERT INTO raw SET ?', {
         met, free_memory: freeMemory, state,
-        ground_level: groundLevel, agl, altitude, pressure,
+        ground_level: null, agl, altitude: null, pressure: null,
         acc_x: accX, acc_y: accY, acc_z: accZ,
         gyro_x: gyroX, gyro_y: gyroY, gyro_z: gyroZ,
         created_at: new Date()
