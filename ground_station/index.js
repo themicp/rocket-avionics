@@ -37,6 +37,7 @@ const COMMANDS = {
   trigger_fts: 6
 }
 
+previousData = null
 dataEmitter.on('data', data => {
   if (data.indexOf('RAW:') == 0) {
     data = data.replace('RAW:', '')
@@ -53,11 +54,20 @@ dataEmitter.on('data', data => {
       gyroY = data[8] ? parseFloat(data[8]) : null
       gyroZ = data[9] ? parseFloat(data[9]) : null
 
+      verticalVelocity = null
+      if (agl != null && previousData) {
+        dt = met - previousData[0]
+        scale = 1000 / dt
+        diff = agl - parseFloat(previousData[3])
+        verticalVelocity = diff * scale // meters per second
+      }
+
       connection.query('INSERT INTO raw SET ?', {
         met, free_memory: freeMemory, state,
         ground_level: null, agl, altitude: null, pressure: null,
         acc_x: accX, acc_y: accY, acc_z: accZ,
         gyro_x: gyroX, gyro_y: gyroY, gyro_z: gyroZ,
+        vertical_velocity: verticalVelocity,
         created_at: new Date()
       }, (err) => {
         if (err) console.log(err)
@@ -65,6 +75,8 @@ dataEmitter.on('data', data => {
     } catch (e) {
       console.log(e)
     }
+
+    previousData = data
   }
 })
 
