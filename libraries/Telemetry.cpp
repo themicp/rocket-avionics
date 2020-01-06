@@ -2,7 +2,8 @@
 
 #define CLIENT_ADDRESS 1
 #define SERVER_ADDRESS 2
-#define SERIAL_DEBUG false
+#define SERIAL_DEBUG true
+#define SD_LOGS false
 
 // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
 RH_RF95 Telemetry::rf95(8, 3);
@@ -27,6 +28,14 @@ void Telemetry::send(String data) {
   data.toCharArray(stream, data.length() + 1);
   stream[data.length()] = '\0';
 
+#if SD_LOGS
+  logsFile = SD.open(logsFilename, FILE_WRITE);
+  if (logsFile) {
+    logsFile.println(stream);
+    logsFile.close();
+  }
+#endif
+
   rf95.send((uint8_t *)stream, sizeof(stream));
   rf95.waitPacketSent();
   rf95.setModeRx(); // continue listening
@@ -38,6 +47,17 @@ void Telemetry::setup() {
   }
   rf95.setSignalBandwidth(500000);
   rf95.setSpreadingFactor(8);
+
+#if SD_LOGS
+  if (!SD.begin(4)) {
+    while(1);
+  }
+
+  if (SD.exists(logsFilename)) {
+    SD.remove(logsFilename);
+  }
+#endif
+
   init = true;
 }
 

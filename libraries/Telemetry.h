@@ -2,6 +2,7 @@
 #include "SPI.h"
 #include "RH_RF95.h"
 #include "RHReliableDatagram.h"
+#include "SD.h"
 
 class Telemetry {
   public:
@@ -15,5 +16,8 @@ class Telemetry {
     bool init = false;
     static RH_RF95 rf95;
     static RHReliableDatagram rf_manager;
+    String logsFilename = "flight_logs";
+    File logsFile;
+
     Telemetry();
 };
