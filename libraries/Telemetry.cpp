@@ -45,11 +45,12 @@ void Telemetry::setup() {
   if (!rf_manager.init()) {
     while(1);
   }
+
   rf95.setSignalBandwidth(500000);
   rf95.setSpreadingFactor(8);
 
 #if SD_LOGS
-  if (!SD.begin(4)) {
+  if (!SD.begin(10)) {
     while(1);
   }
 
