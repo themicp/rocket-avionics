@@ -130,7 +130,7 @@
         lastLine = lines[lines.length - 1]
         if (lastLine.indexOf("RAW:") === 0) {
           entries = lastLine.split(',')
-          state = entries[2]
+          state = entries[3]
           document.getElementById('state').innerHTML = state
         }
       }
