@@ -5,6 +5,7 @@
 #define LAUNCH_ACCELERATION_THRESHOLD 3 // g
 #define TIME_TO_APOGEE 10 // s
 #define GRAVITY 9.81 // m/s^2 -- update on other planets
+#define VBATPIN A7
 
 // TODO: add transition from ASCENDING to READY (for false positive launche detection)
 
@@ -144,8 +145,20 @@ void FSM::onRecovering() {
   // TODO: celebrate
 }
 
+String internalBoardStatus() {
+  float measuredvbat = analogRead(VBATPIN);
+  measuredvbat *= 2;
+  measuredvbat *= 3.3;
+  measuredvbat /= 1024;
+
+  return
+    String(millis()) + "," +
+    String(freeMemory()/1000) + "," +
+    String(measuredvbat);
+}
+
 void FSM::runCurrentState() {
-  String message = "RAW:" + String(millis()) + "," + String(freeMemory()/1000) + "," + state_to_str(state);
+  String message = "RAW:" + internalBoardStatus() + "," + state_to_str(state);
   if (state != STATE::SETUP and state != STATE::IDLE and state != STATE::CALIBRATION) {
     message += "," +
       String(altimeter->agl()) + "," +
