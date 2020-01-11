@@ -45,25 +45,26 @@ dataEmitter.on('data', data => {
       data = data.split(',')
       met = +data[0]
       freeMemory = parseInt(data[1], 10)
-      state = data[2].replace(/\n|\r/g, '')
-      agl = data[3] ? parseFloat(data[3]) : null
-      accX = data[4] ? parseFloat(data[4]) : null
-      accY = data[5] ? parseFloat(data[5]) : null
-      accZ = data[6] ? parseFloat(data[6]) : null
-      gyroX = data[7] ? parseFloat(data[7]) : null
-      gyroY = data[8] ? parseFloat(data[8]) : null
-      gyroZ = data[9] ? parseFloat(data[9]) : null
+      battery = data[2] ? parseFloat(data[2]) : null
+      state = data[3].replace(/\n|\r/g, '')
+      agl = data[4] ? parseFloat(data[4]) : null
+      accX = data[5] ? parseFloat(data[5]) : null
+      accY = data[6] ? parseFloat(data[6]) : null
+      accZ = data[7] ? parseFloat(data[7]) : null
+      gyroX = data[8] ? parseFloat(data[8]) : null
+      gyroY = data[9] ? parseFloat(data[9]) : null
+      gyroZ = data[10] ? parseFloat(data[10]) : null
 
       verticalVelocity = null
-      if (agl != null && previousData) {
+      if (agl != null && previousData && previousData[4]) {
         dt = met - previousData[0]
         scale = 1000 / dt
-        diff = agl - parseFloat(previousData[3])
+        diff = agl - parseFloat(previousData[4])
         verticalVelocity = diff * scale // meters per second
       }
 
       connection.query('INSERT INTO raw SET ?', {
-        met, free_memory: freeMemory, state,
+        met, free_memory: freeMemory, battery, state,
         ground_level: null, agl, altitude: null, pressure: null,
         acc_x: accX, acc_y: accY, acc_z: accZ,
         gyro_x: gyroX, gyro_y: gyroY, gyro_z: gyroZ,
