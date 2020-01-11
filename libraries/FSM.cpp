@@ -38,6 +38,7 @@ FSM::FSM(Telemetry* telemetry, IMU* imuSensor, Altimeter* altimeter)
     Transition(STATE::READY, EVENT::LAUNCHED, STATE::ASCENDING),
     Transition(STATE::ASCENDING, EVENT::APOGEE_TIMER_TIMEOUT, STATE::APOGEE_TIMEOUT),
     Transition(STATE::ASCENDING, EVENT::APOGEE_DETECTED, STATE::APOGEE),
+    Transition(STATE::APOGEE_TIMEOUT, EVENT::APOGEE_DETECTED, STATE::APOGEE),
     Transition(STATE::APOGEE, EVENT::CHUTE_EJECTED, STATE::RECOVERING),
     Transition(STATE::FTS, EVENT::CHUTE_EJECTED, STATE::RECOVERING),
 
@@ -126,18 +127,20 @@ void FSM::onAscending() {
   if (millis() - launchTime > TIME_TO_APOGEE * 1000) {
     process_event(EVENT::APOGEE_TIMER_TIMEOUT);
   }
-  // TODO: check BMP and IMU
+  // TODO: check IMU ?
 }
 
 void FSM::onApogeeTimeout() {
-  // TODO: trigger and detect ejection charge
+  process_event(EVENT::APOGEE_DETECTED);
 }
 
 void FSM::onApogee() {
+  process_event(EVENT::CHUTE_EJECTED);
   // TODO: trigger and detect ejection charge
 }
 
 void FSM::onFTS() {
+  process_event(EVENT::CHUTE_EJECTED);
   // TODO: trigger and detect ejection charge
 }
 
