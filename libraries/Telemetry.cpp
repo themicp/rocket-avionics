@@ -57,6 +57,13 @@ void Telemetry::setup() {
   if (SD.exists(logsFilename)) {
     SD.remove(logsFilename);
   }
+
+  logsFile = SD.open(logsFilename, FILE_WRITE);
+  if (!logsFile) { // test if we can open the file
+    while(1);
+  } else {
+    logsFile.close();
+  }
 #endif
 
   init = true;
