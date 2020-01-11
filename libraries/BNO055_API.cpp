@@ -101,6 +101,9 @@ void BNO055_API::setup() {
     while(1);
   }
 
+  // 2G = 0, 4G = 1, 8G = 2, 16G = 3
+  sensor.setAccelRange(3);
+
   // TODO: do we need this?
   sensor.setExtCrystalUse(true);
 }
