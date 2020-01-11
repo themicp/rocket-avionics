@@ -124,7 +124,14 @@ void FSM::onReady() {
 }
 
 void FSM::onAscending() {
-  if (millis() - launchTime > TIME_TO_APOGEE * 1000) {
+  float agl = altimeter->agl();
+  if (agl > maxAgl) {
+    maxAgl = agl;
+  }
+
+  if (maxAgl - agl >= APOGEE_AGL_DIFF_THRESHOLD) {
+    process_event(EVENT::APOGEE_DETECTED);
+  } else if (millis() - launchTime > TIME_TO_APOGEE * 1000) {
     process_event(EVENT::APOGEE_TIMER_TIMEOUT);
   }
   // TODO: check IMU ?

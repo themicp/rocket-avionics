@@ -38,6 +38,7 @@ class FSM {
   private:
     STATE state = STATE::SETUP;
     STATE state_transitions[(int)STATE::Count][(int)EVENT::Count];
+    float maxAgl = 0;
 
     void onSetup();
     void onIDLE();
