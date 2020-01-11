@@ -3,7 +3,7 @@
 #define CLIENT_ADDRESS 1
 #define SERVER_ADDRESS 2
 #define SERIAL_DEBUG true
-#define SD_LOGS false
+#define SD_LOGS true
 
 // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
 RH_RF95 Telemetry::rf95(8, 3);
