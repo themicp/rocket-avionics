@@ -1,7 +1,8 @@
 #include "FSM.h"
 #include "memoryUsage.h"
 
-#define LAUNCH_AGL_THRESHOLD 50 // meters
+#define LAUNCH_AGL_THRESHOLD 5 // meters
+#define APOGEE_AGL_DIFF_THRESHOLD 5 // meters
 #define LAUNCH_ACCELERATION_THRESHOLD 3 // g
 #define TIME_TO_APOGEE 10 // s
 #define GRAVITY 9.81 // m/s^2 -- update on other planets
