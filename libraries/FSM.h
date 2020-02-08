@@ -22,13 +22,6 @@ class Transition {
 };
 
 class FSM {
-  Telemetry* telemetry;
-  IMU* imu_sensor;
-  Altimeter* altimeter;
-  Igniter* igniter;
-  int launch_time;
-  int ejection_start;
-
   public:
     template<size_t N>
     void register_state_transitions(Transition (&transitions)[N]);
@@ -41,6 +34,14 @@ class FSM {
   private:
     STATE state = STATE::SETUP;
     STATE state_transitions[(int)STATE::Count][(int)EVENT::Count];
+
+    Telemetry* telemetry;
+    IMU* imu_sensor;
+    Altimeter* altimeter;
+    Igniter* igniter;
+
+    int launch_time;
+    int ejection_start;
     float max_agl = 0;
 
     void onSetup();
