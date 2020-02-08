@@ -26,7 +26,7 @@ class FSM {
   IMU* imu_sensor;
   Altimeter* altimeter;
   Igniter* igniter;
-  int launchTime;
+  int launch_time;
   int ejection_start;
 
   public:
@@ -41,7 +41,7 @@ class FSM {
   private:
     STATE state = STATE::SETUP;
     STATE state_transitions[(int)STATE::Count][(int)EVENT::Count];
-    float maxAgl = 0;
+    float max_agl = 0;
 
     void onSetup();
     void onIDLE();
