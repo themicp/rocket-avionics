@@ -21,15 +21,15 @@ float BMP280_API::pressure() {
 }
 
 float BMP280_API::agl() {
-  return altitude() - groundLevel;
+  return altitude() - ground_level;
 }
 
 void BMP280_API::setGroundLevel() {
-  groundLevel = sensor.readAltitude();
+  ground_level = sensor.readAltitude();
 }
 
 float BMP280_API::getGroundLevel() {
-  return groundLevel;
+  return ground_level;
 }
 
 void BMP280_API::setup() {

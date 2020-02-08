@@ -16,7 +16,7 @@ BNO055_API& BNO055_API::getInstance() {
 
 void BNO055_API::readSensorData() {
   // TODO: fix units
-  if (millis() - lastRead < READ_INTERVAL) {
+  if (millis() - last_read < READ_INTERVAL) {
     return;
   }
 
@@ -25,7 +25,7 @@ void BNO055_API::readSensorData() {
   gyro = sensor.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
   mag = sensor.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);
 
-  lastRead = millis();
+  last_read = millis();
 }
 
 float BNO055_API::pitch() {

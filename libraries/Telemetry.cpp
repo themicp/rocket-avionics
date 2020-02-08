@@ -29,10 +29,10 @@ void Telemetry::send(String data) {
   stream[data.length()] = '\0';
 
 #if SD_LOGS
-  logsFile = SD.open(logsFilename, FILE_WRITE);
-  if (logsFile) {
-    logsFile.println(stream);
-    logsFile.close();
+  logs_file = SD.open(logs_filename, FILE_WRITE);
+  if (logs_file) {
+    logs_file.println(stream);
+    logs_file.close();
   }
 #endif
 
@@ -54,15 +54,15 @@ void Telemetry::setup() {
     while(1);
   }
 
-  if (SD.exists(logsFilename)) {
-    SD.remove(logsFilename);
+  if (SD.exists(logs_filename)) {
+    SD.remove(logs_filename);
   }
 
-  logsFile = SD.open(logsFilename, FILE_WRITE);
-  if (!logsFile) { // test if we can open the file
+  logs_file = SD.open(logs_filename, FILE_WRITE);
+  if (!logs_file) { // test if we can open the file
     while(1);
   } else {
-    logsFile.close();
+    logs_file.close();
   }
 #endif
 

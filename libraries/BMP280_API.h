@@ -19,6 +19,6 @@ class BMP280_API: public Altimeter {
   private:
     BMP280_API();
 
-    float groundLevel = 0;
+    float ground_level = 0;
     void setGroundLevel();
 };

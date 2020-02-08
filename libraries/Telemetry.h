@@ -16,8 +16,8 @@ class Telemetry {
     bool init = false;
     static RH_RF95 rf95;
     static RHReliableDatagram rf_manager;
-    String logsFilename = "flight.log"; // max length: 8.3
-    File logsFile;
+    String logs_filename = "flight.log"; // max length: 8.3
+    File logs_file;
 
     Telemetry();
 };
