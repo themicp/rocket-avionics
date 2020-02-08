@@ -3,7 +3,7 @@
 #include "FSM.h"
 #include "mosfet_igniter.h"
 
-BNO055_API imuSensor = BNO055_API::getInstance();
+BNO055_API imu_sensor = BNO055_API::getInstance();
 BMP280_API altimeter = BMP280_API::getInstance();
 Telemetry telemetry = Telemetry::getInstance();
 MosfetIgniter igniter = MosfetIgniter::getInstance();
@@ -17,7 +17,7 @@ void setup() {
   Serial.begin(9600);
 #endif
 
-  fsm = new FSM(&telemetry, &imuSensor, &altimeter, &igniter);
+  fsm = new FSM(&telemetry, &imu_sensor, &altimeter, &igniter);
 }
 
 void loop() {

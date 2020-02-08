@@ -27,9 +27,9 @@ String event_to_str(EVENT event) {
   return names[(int)event];
 }
 
-FSM::FSM(Telemetry* telemetry, IMU* imuSensor, Altimeter* altimeter, Igniter* igniter)
+FSM::FSM(Telemetry* telemetry, IMU* imu_sensor, Altimeter* altimeter, Igniter* igniter)
   : telemetry(telemetry)
-  , imuSensor(imuSensor)
+  , imu_sensor(imu_sensor)
   , altimeter(altimeter)
   , igniter(igniter)
 {
@@ -97,7 +97,7 @@ void FSM::onSetup() {
   telemetry->send("Wire begin");
 
   telemetry->send("Setting up IMU..");
-  imuSensor->setup();
+  imu_sensor->setup();
   telemetry->send("IMU setup complete.");
 
   telemetry->send("Setting up Altimeter..");
@@ -119,7 +119,7 @@ void FSM::onCalibration() {
   telemetry->send("Altimeter: ground level set to " + String(altimeter->getGroundLevel()) + "m");
 
   telemetry->send("IMU: calibrating..");
-  imuSensor->calibrate();
+  imu_sensor->calibrate();
   telemetry->send("IMU: calibrated.");
 
   process_event(EVENT::CALIBRATION_COMPLETE);
@@ -127,7 +127,7 @@ void FSM::onCalibration() {
 
 void FSM::onReady() {
   if (altimeter->agl() > LAUNCH_AGL_THRESHOLD or
-      imuSensor->accelerationX() / GRAVITY > LAUNCH_ACCELERATION_THRESHOLD) {
+      imu_sensor->accelerationX() / GRAVITY > LAUNCH_ACCELERATION_THRESHOLD) {
     process_event(EVENT::LAUNCHED);
   }
 }
@@ -179,12 +179,12 @@ void FSM::runCurrentState() {
   if (state != STATE::SETUP and state != STATE::IDLE and state != STATE::CALIBRATION) {
     message += "," +
       String(altimeter->agl()) + "," +
-      String(imuSensor->accelerationX()) + "," +
-      String(imuSensor->accelerationY()) + "," +
-      String(imuSensor->accelerationZ()) + "," +
-      String(imuSensor->gyroX()) + "," +
-      String(imuSensor->gyroY()) + "," +
-      String(imuSensor->gyroZ());
+      String(imu_sensor->accelerationX()) + "," +
+      String(imu_sensor->accelerationY()) + "," +
+      String(imu_sensor->accelerationZ()) + "," +
+      String(imu_sensor->gyroX()) + "," +
+      String(imu_sensor->gyroY()) + "," +
+      String(imu_sensor->gyroZ());
   }
   telemetry->send(message);
 
