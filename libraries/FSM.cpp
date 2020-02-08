@@ -7,11 +7,12 @@
 #define TIME_TO_APOGEE 10 // s
 #define GRAVITY 9.81 // m/s^2 -- update on other planets
 #define VBATPIN A7
+#define EJECTION_TIMEOUT 4000 // ms
 
 // TODO: add transition from ASCENDING to READY (for false positive launche detection)
 
 String state_to_str(STATE state) {
-  String names[] = {"INVALID_STATE", "SETUP", "IDLE", "CALIBRATION", "READY", "ASCENDING", "APOGEE_TIMEOUT", "APOGEE", "FTS", "RECOVERING"};
+  String names[] = {"INVALID_STATE", "SETUP", "IDLE", "CALIBRATION", "READY", "ASCENDING", "APOGEE_TIMEOUT", "DEPLOYING_CHUTE", "RECOVERING"};
   if ((int)state >= (int)STATE::Count or (int)state < 0) {
     return "Unknown";
   }
@@ -26,10 +27,11 @@ String event_to_str(EVENT event) {
   return names[(int)event];
 }
 
-FSM::FSM(Telemetry* telemetry, IMU* imuSensor, Altimeter* altimeter)
+FSM::FSM(Telemetry* telemetry, IMU* imuSensor, Altimeter* altimeter, Igniter* igniter)
   : telemetry(telemetry)
   , imuSensor(imuSensor)
   , altimeter(altimeter)
+  , igniter(igniter)
 {
   Transition flight_state_transitions[] = {
     Transition(STATE::SETUP, EVENT::SETUP_COMPLETE, STATE::IDLE),
@@ -38,20 +40,18 @@ FSM::FSM(Telemetry* telemetry, IMU* imuSensor, Altimeter* altimeter)
     Transition(STATE::CALIBRATION, EVENT::CALIBRATION_COMPLETE, STATE::READY),
     Transition(STATE::READY, EVENT::LAUNCHED, STATE::ASCENDING),
     Transition(STATE::ASCENDING, EVENT::APOGEE_TIMER_TIMEOUT, STATE::APOGEE_TIMEOUT),
-    Transition(STATE::ASCENDING, EVENT::APOGEE_DETECTED, STATE::APOGEE),
-    Transition(STATE::APOGEE_TIMEOUT, EVENT::APOGEE_DETECTED, STATE::APOGEE),
-    Transition(STATE::APOGEE, EVENT::CHUTE_EJECTED, STATE::RECOVERING),
-    Transition(STATE::FTS, EVENT::CHUTE_EJECTED, STATE::RECOVERING),
+    Transition(STATE::ASCENDING, EVENT::APOGEE_DETECTED, STATE::DEPLOYING_CHUTE),
+    Transition(STATE::APOGEE_TIMEOUT, EVENT::APOGEE_DETECTED, STATE::DEPLOYING_CHUTE),
+    Transition(STATE::DEPLOYING_CHUTE, EVENT::CHUTE_EJECTED, STATE::RECOVERING),
 
     // FTS from all states
-    Transition(STATE::SETUP, EVENT::TRIGGER_FTS, STATE::FTS),
-    Transition(STATE::IDLE, EVENT::TRIGGER_FTS, STATE::FTS),
-    Transition(STATE::CALIBRATION, EVENT::TRIGGER_FTS, STATE::FTS),
-    Transition(STATE::READY, EVENT::TRIGGER_FTS, STATE::FTS),
-    Transition(STATE::ASCENDING, EVENT::TRIGGER_FTS, STATE::FTS),
-    Transition(STATE::APOGEE_TIMEOUT, EVENT::TRIGGER_FTS, STATE::FTS),
-    Transition(STATE::APOGEE, EVENT::TRIGGER_FTS, STATE::FTS),
-    Transition(STATE::RECOVERING, EVENT::TRIGGER_FTS, STATE::FTS)
+    Transition(STATE::SETUP, EVENT::TRIGGER_FTS, STATE::DEPLOYING_CHUTE),
+    Transition(STATE::IDLE, EVENT::TRIGGER_FTS, STATE::DEPLOYING_CHUTE),
+    Transition(STATE::CALIBRATION, EVENT::TRIGGER_FTS, STATE::DEPLOYING_CHUTE),
+    Transition(STATE::READY, EVENT::TRIGGER_FTS, STATE::DEPLOYING_CHUTE),
+    Transition(STATE::ASCENDING, EVENT::TRIGGER_FTS, STATE::DEPLOYING_CHUTE),
+    Transition(STATE::APOGEE_TIMEOUT, EVENT::TRIGGER_FTS, STATE::DEPLOYING_CHUTE),
+    Transition(STATE::RECOVERING, EVENT::TRIGGER_FTS, STATE::DEPLOYING_CHUTE)
   };
 
   register_state_transitions(flight_state_transitions);
@@ -75,6 +75,10 @@ void FSM::process_event(EVENT event) {
 
   if (state_transitions[(int)state][(int)event] != STATE::INVALID_STATE) {
     state = state_transitions[(int)state][(int)event];
+
+    if (state == STATE::DEPLOYING_CHUTE) {
+      ejection_start = millis();
+    }
   } else {
     telemetry->send("Illegal state transition from state " + state_to_str(state) + " with event " + event_to_str(event));
   }
@@ -99,6 +103,10 @@ void FSM::onSetup() {
   telemetry->send("Setting up Altimeter..");
   altimeter->setup();
   telemetry->send("Altimeter setup complete.");
+
+  telemetry->send("Setting up Igniter..");
+  igniter->setup();
+  telemetry->send("Igniter setup complete.");
 
   process_event(EVENT::SETUP_COMPLETE);
 }
@@ -142,14 +150,12 @@ void FSM::onApogeeTimeout() {
   process_event(EVENT::APOGEE_DETECTED);
 }
 
-void FSM::onApogee() {
-  process_event(EVENT::CHUTE_EJECTED);
-  // TODO: trigger and detect ejection charge
-}
-
-void FSM::onFTS() {
-  process_event(EVENT::CHUTE_EJECTED);
-  // TODO: trigger and detect ejection charge
+void FSM::onDeployingChute() {
+  igniter->enable();
+  if (millis() - ejection_start > EJECTION_TIMEOUT) {
+    igniter->disable();
+    process_event(EVENT::CHUTE_EJECTED);
+  }
 }
 
 void FSM::onRecovering() {
@@ -198,14 +204,11 @@ void FSM::runCurrentState() {
     case STATE::ASCENDING:
       onAscending();
       break;
-    case STATE::APOGEE:
-      onApogee();
-      break;
     case STATE::APOGEE_TIMEOUT:
       onApogeeTimeout();
       break;
-    case STATE::FTS:
-      onFTS();
+    case STATE::DEPLOYING_CHUTE:
+      onDeployingChute();
       break;
     case STATE::RECOVERING:
       onRecovering();
