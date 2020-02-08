@@ -2,8 +2,9 @@
 #include "Telemetry.h"
 #include "IMU.h"
 #include "Altimeter.h"
+#include "igniter.h"
 
-enum class STATE {INVALID_STATE, SETUP, IDLE, CALIBRATION, READY, ASCENDING, APOGEE_TIMEOUT, APOGEE, FTS, RECOVERING, Count};
+enum class STATE {INVALID_STATE, SETUP, IDLE, CALIBRATION, READY, ASCENDING, APOGEE_TIMEOUT, DEPLOYING_CHUTE, RECOVERING, Count};
 
 enum class EVENT {SETUP_COMPLETE, INIT_CALIBRATION, CALIBRATION_COMPLETE, LAUNCHED, APOGEE_TIMER_TIMEOUT, APOGEE_DETECTED, TRIGGER_FTS, CHUTE_EJECTED, Count};
 
@@ -24,7 +25,9 @@ class FSM {
   Telemetry* telemetry;
   IMU* imuSensor;
   Altimeter* altimeter;
+  Igniter* igniter;
   int launchTime;
+  int ejection_start;
 
   public:
     template<size_t N>
@@ -33,7 +36,7 @@ class FSM {
     void process_event(EVENT event);
     void runCurrentState();
 
-    FSM(Telemetry* telemetry, IMU* imuSensor, Altimeter* altimeter);
+    FSM(Telemetry* telemetry, IMU* imuSensor, Altimeter* altimeter, Igniter* igniter);
 
   private:
     STATE state = STATE::SETUP;
@@ -46,7 +49,6 @@ class FSM {
     void onReady();
     void onAscending();
     void onApogeeTimeout();
-    void onApogee();
-    void onFTS();
+    void onDeployingChute();
     void onRecovering();
 };
