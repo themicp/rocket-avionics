@@ -1,7 +1,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
-#include "BNO055_API.h"
+#include "bno055_api.h"
 
 // #define BNO055_SAMPLERATE_DELAY_MS (100)
 

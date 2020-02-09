@@ -1,7 +1,7 @@
 #include "Wire.h"
-#include "Telemetry.h"
-#include "IMU.h"
-#include "Altimeter.h"
+#include "telemetry.h"
+#include "imu.h"
+#include "altimeter.h"
 #include "igniter.h"
 
 enum class STATE {INVALID_STATE, SETUP, IDLE, CALIBRATION, READY, ASCENDING, APOGEE_TIMEOUT, DEPLOYING_CHUTE, RECOVERING, Count};

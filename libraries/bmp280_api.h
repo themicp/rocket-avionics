@@ -1,4 +1,4 @@
-#include "Altimeter.h"
+#include "altimeter.h"
 #include "Adafruit_BMP280.h"
 
 

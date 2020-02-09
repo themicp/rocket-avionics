@@ -1,5 +1,5 @@
 #include <Adafruit_BNO055.h>
-#include "IMU.h"
+#include "imu.h"
 
 class BNO055_API: public IMU {
   static Adafruit_BNO055 sensor;

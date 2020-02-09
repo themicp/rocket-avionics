@@ -1,4 +1,4 @@
-#include "Telemetry.h"
+#include "telemetry.h"
 
 #define CLIENT_ADDRESS 1
 #define SERVER_ADDRESS 2

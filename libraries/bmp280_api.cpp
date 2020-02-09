@@ -1,4 +1,4 @@
-#include "BMP280_API.h"
+#include "bmp280_api.h"
 
 #define BMP_SCK  (13)
 #define BMP_MISO (12) // SD0

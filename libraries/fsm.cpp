@@ -1,4 +1,4 @@
-#include "FSM.h"
+#include "fsm.h"
 #include "memoryUsage.h"
 
 #define LAUNCH_AGL_THRESHOLD 5 // meters

@@ -1,6 +1,6 @@
-#include "BMP280_API.h"
-#include "BNO055_API.h"
-#include "FSM.h"
+#include "bmp280_api.h"
+#include "bno055_api.h"
+#include "fsm.h"
 #include "mosfet_igniter.h"
 
 BNO055_API imu_sensor = BNO055_API::getInstance();
