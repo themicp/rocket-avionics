@@ -9,8 +9,6 @@
 #define VBATPIN A7
 #define EJECTION_TIMEOUT 4000 // ms
 
-// TODO: add transition from ASCENDING to READY (for false positive launche detection)
-
 String state_to_str(STATE state) {
   String names[] = {"INVALID_STATE", "SETUP", "IDLE", "CALIBRATION", "READY", "ASCENDING", "APOGEE_TIMEOUT", "DEPLOYING_CHUTE", "RECOVERING"};
   if ((int)state >= (int)STATE::Count or (int)state < 0) {
@@ -40,6 +38,7 @@ FSM::FSM(Telemetry* telemetry, IMU* imu_sensor, Altimeter* altimeter, Igniter* i
     Transition(STATE::CALIBRATION, EVENT::CALIBRATION_COMPLETE, STATE::READY),
     Transition(STATE::READY, EVENT::LAUNCHED, STATE::ASCENDING),
     Transition(STATE::ASCENDING, EVENT::APOGEE_TIMER_TIMEOUT, STATE::APOGEE_TIMEOUT),
+    Transition(STATE::ASCENDING, EVENT::INIT_CALIBRATION, STATE::CALIBRATION),
     Transition(STATE::ASCENDING, EVENT::APOGEE_DETECTED, STATE::DEPLOYING_CHUTE),
     Transition(STATE::APOGEE_TIMEOUT, EVENT::APOGEE_DETECTED, STATE::DEPLOYING_CHUTE),
     Transition(STATE::DEPLOYING_CHUTE, EVENT::CHUTE_EJECTED, STATE::RECOVERING),
@@ -80,7 +79,7 @@ void FSM::process_event(EVENT event) {
       ejection_start = millis();
     }
   } else {
-    telemetry->send("Illegal state transition from state " + state_to_str(state) + " with event " + event_to_str(event));
+    telemetry->send("No transition from state " + state_to_str(state) + " with event " + event_to_str(event));
   }
 
   if (event == EVENT::LAUNCHED) {
