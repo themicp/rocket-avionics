@@ -32,11 +32,14 @@ FSM::FSM(Telemetry* telemetry, IMU* imu_sensor, Altimeter* altimeter, Igniter* i
   , igniter(igniter)
 {
   Transition flight_state_transitions[] = {
+    // Ground
     Transition(STATE::SETUP, EVENT::SETUP_COMPLETE, STATE::IDLE),
     Transition(STATE::IDLE, EVENT::INIT_CALIBRATION, STATE::CALIBRATION),
     Transition(STATE::READY, EVENT::INIT_CALIBRATION, STATE::CALIBRATION),
     Transition(STATE::CALIBRATION, EVENT::CALIBRATION_COMPLETE, STATE::READY),
     Transition(STATE::READY, EVENT::LAUNCHED, STATE::ASCENDING),
+
+    // Flying
     Transition(STATE::ASCENDING, EVENT::APOGEE_TIMER_TIMEOUT, STATE::APOGEE_TIMEOUT),
     Transition(STATE::ASCENDING, EVENT::INIT_CALIBRATION, STATE::CALIBRATION),
     Transition(STATE::ASCENDING, EVENT::APOGEE_DETECTED, STATE::DEPLOYING_CHUTE),
