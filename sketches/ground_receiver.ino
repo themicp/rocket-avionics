@@ -1,12 +1,19 @@
 #include <SPI.h>
 #include <RH_RF95.h>
 #include <RHReliableDatagram.h>
+#include <ArduinoJson.h>
 
 #define CLIENT_ADDRESS 1
 #define SERVER_ADDRESS 2
 
 RH_RF95 rf95(8, 3); // Adafruit Feather M0 with RFM95 
 RHReliableDatagram manager(rf95, CLIENT_ADDRESS);
+
+void printJson(JsonDocument &doc) {
+  String output;
+  serializeJson(doc, output);
+  Serial.println(output);
+}
 
 void setup() {
   Serial.begin(9600);
@@ -24,10 +31,13 @@ void loop() {
   uint8_t buf[RH_RF95_MAX_MESSAGE_LEN];
   uint8_t len = sizeof(buf);
   uint8_t from;
+  StaticJsonDocument<200> output;
 
   if (rf95.available()) {
     if (rf95.recv(buf, &len)) {
-      Serial.println((char*)buf);
+      output["message"] = (char*)buf;
+      output["rssi"] = rf95.lastRssi();
+      printJson(output);
     }
   }
 
