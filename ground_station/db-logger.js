@@ -10,7 +10,16 @@ const connection = mysql.createConnection({
 connection.connect();
 
 previousData = null
-module.exports = (data, date) => {
+module.exports = (messageStr, date) => {
+  let message;
+  try {
+    message = JSON.parse(messageStr)
+  } catch (e) {
+    return
+  }
+
+  data = message.message
+
   if (data.indexOf('RAW:') == 0) {
     data = data.replace('RAW:', '')
     try {
@@ -40,7 +49,7 @@ module.exports = (data, date) => {
         ground_level: null, agl, altitude: null, pressure: null,
         acc_x: accX, acc_y: accY, acc_z: accZ,
         gyro_x: gyroX, gyro_y: gyroY, gyro_z: gyroZ,
-        vertical_velocity: verticalVelocity,
+        vertical_velocity: verticalVelocity, rssi: message.rssi,
         created_at: date || new Date()
       }, (err) => {
         if (err) console.log(err)
