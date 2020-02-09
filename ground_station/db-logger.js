@@ -10,6 +10,8 @@ const connection = mysql.createConnection({
 connection.connect();
 
 previousData = null
+lastPacketNumber = 0
+packetsLost = 0
 module.exports = (messageStr, date) => {
   let message;
   try {
@@ -20,8 +22,15 @@ module.exports = (messageStr, date) => {
 
   data = message.message
 
-  if (data.indexOf('RAW:') == 0) {
-    data = data.replace('RAW:', '')
+  if (data.indexOf('RAW:') >= 0) {
+    // Example message: (#)RAW:....
+    packetNumberEnd = data.indexOf(')')
+    packetNumber = parseInt(data.substring(1, packetNumberEnd))
+    packetsLost += packetNumber - lastPacketNumber - 1
+    lastPacketNumber = packetNumber
+
+    rawStart = data.indexOf('RAW:')
+    data = data.substr(rawStart + 4);
     try {
       data = data.split(',')
       met = +data[0]
@@ -50,6 +59,7 @@ module.exports = (messageStr, date) => {
         acc_x: accX, acc_y: accY, acc_z: accZ,
         gyro_x: gyroX, gyro_y: gyroY, gyro_z: gyroZ,
         vertical_velocity: verticalVelocity, rssi: message.rssi,
+        packets_lost: packetsLost,
         created_at: date || new Date()
       }, (err) => {
         if (err) console.log(err)
