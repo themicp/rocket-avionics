@@ -19,6 +19,9 @@ void Telemetry::send(String data) {
     return;
   }
 
+  ++message_count;
+  data = "(" + (String)message_count + ")" + data;
+
 #if SERIAL_DEBUG
     int messageLength = data.length();
     Serial.println("TELEMETRY (" + String(messageLength) + "): " + data);
@@ -66,6 +69,7 @@ void Telemetry::setup() {
   }
 #endif
 
+  message_count = 0;
   init = true;
 }
 
