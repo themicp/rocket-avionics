@@ -1,9 +1,9 @@
 #include "bmp280_api.h"
-#include "bno055_api.h"
+#include "lsm9ds1_api.h"
 #include "fsm.h"
 #include "mosfet_igniter.h"
 
-BNO055_API imu_sensor = BNO055_API::getInstance();
+LSM9DS1_API imu_sensor = LSM9DS1_API::getInstance();
 BMP280_API altimeter = BMP280_API::getInstance();
 Telemetry telemetry = Telemetry::getInstance();
 MosfetIgniter igniter = MosfetIgniter::getInstance();
