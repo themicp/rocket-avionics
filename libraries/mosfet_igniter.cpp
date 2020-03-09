@@ -10,6 +10,7 @@ MosfetIgniter& MosfetIgniter::getInstance() {
 
 void MosfetIgniter::setup() {
   pinMode(mosfet_pin, OUTPUT);
+  digitalWrite(mosfet_pin, LOW);
 }
 
 void MosfetIgniter::enable() {
