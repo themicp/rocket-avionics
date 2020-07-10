@@ -4,6 +4,7 @@
 #define SERVER_ADDRESS 2
 #define SERIAL_DEBUG false
 #define SD_LOGS true
+#define SD_CS 10
 
 // Defaults after init are 434.0MHz, 13dBm, Bw = 125 kHz, Cr = 4/5, Sf = 128chips/symbol, CRC on
 RH_RF95 Telemetry::rf95(8, 3);
@@ -53,7 +54,7 @@ void Telemetry::setup() {
   rf95.setSpreadingFactor(8);
 
 #if SD_LOGS
-  if (!SD.begin(10)) {
+  if (!SD.begin(SD_CS)) {
     while(1);
   }
 
