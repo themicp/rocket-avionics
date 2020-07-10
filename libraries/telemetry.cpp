@@ -59,7 +59,8 @@ void Telemetry::setup() {
   }
 
   if (SD.exists(logs_filename)) {
-    SD.remove(logs_filename);
+    // TODO: Rotate log files
+    // SD.remove(logs_filename);
   }
 
   logs_file = SD.open(logs_filename, FILE_WRITE);
