@@ -1,7 +1,8 @@
 #include "mosfet_igniter.h"
 #include "Arduino.h"
 
-const int mosfet_pin = 12;
+const int mosfet_pin = 5; // IGN1
+// const int mosfet_pin = 6; // IGN2
 
 MosfetIgniter& MosfetIgniter::getInstance() {
   static MosfetIgniter instance;
