@@ -3,3 +3,4 @@
 *.bin
 node_modules/
 ./flight-computer.ino
+.DS_Store
