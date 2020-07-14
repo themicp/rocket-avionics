@@ -4,6 +4,9 @@
 - Arduino IDE
 - Arduino CLI (tested on version 0.11.0)
 
+## Setup
+Clone the repository with `git clone --recurse-submodules` to automatically download all the submodules.
+
 ## Deployment
 **Currently works only on OS X.**
 
