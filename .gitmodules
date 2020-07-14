@@ -25,3 +25,6 @@
 [submodule "ground-receiver/libraries/external/RadioHead"]
 	path = ground-receiver/libraries/external/RadioHead
 	url = git@github.com:themicp/RadioHead.git
+[submodule "ground-receiver/libraries/external/ArduinoJson"]
+	path = ground-receiver/libraries/external/ArduinoJson
+	url = https://github.com/bblanchon/ArduinoJson.git
