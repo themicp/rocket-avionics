@@ -1,11 +1,17 @@
 # Rocket Avionics
 
 ## Requirements
+#### General
 - Arduino IDE
 - Arduino CLI (tested on version 0.11.0)
+#### Ground Receiver
+- Node.JS (tested on version 8+)
+- InfluxDB 2.0.0
 
 ## Setup
 Clone the repository with `git clone --recurse-submodules` to automatically download all the submodules.
+#### Ground Receiver
+The loggers require a `.env` file with local configuration. Copy `ground-receiver/message-handler/.env.template` to `ground-receiver/message-handler/.env` and fill it in with your configuration.
 
 ## Deployment
 **The deployment script is currently configured only for OS X.**
