@@ -7,3 +7,6 @@
 [submodule "flight-computer/libraries/external/Adafruit_BMP3XX"]
 	path = flight-computer/libraries/external/Adafruit_BMP3XX
 	url = https://github.com/adafruit/Adafruit_BMP3XX.git
+[submodule "flight-computer/libraries/external/Adafruit_Sensor"]
+	path = flight-computer/libraries/external/Adafruit_Sensor
+	url = https://github.com/adafruit/Adafruit_Sensor.git
