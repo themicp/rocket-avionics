@@ -1,3 +1,6 @@
 [submodule "flight-computer/libraries/external/Adafruit_BNO055"]
 	path = flight-computer/libraries/external/Adafruit_BNO055
 	url = https://github.com/themicp/Adafruit_BNO055.git
+[submodule "flight-computer/libraries/external/Adafruit_BMP280_Library"]
+	path = flight-computer/libraries/external/Adafruit_BMP280_Library
+	url = https://github.com/adafruit/Adafruit_BMP280_Library.git
