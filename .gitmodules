@@ -19,3 +19,6 @@
 [submodule "flight-computer/libraries/external/Adafruit_LIS3MDL"]
 	path = flight-computer/libraries/external/Adafruit_LIS3MDL
 	url = https://github.com/adafruit/Adafruit_LIS3MDL.git
+[submodule "flight-computer/libraries/external/RadioHead"]
+	path = flight-computer/libraries/external/RadioHead
+	url = git@github.com:themicp/RadioHead.git
