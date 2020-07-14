@@ -8,7 +8,7 @@
 Clone the repository with `git clone --recurse-submodules` to automatically download all the submodules.
 
 ## Deployment
-**Currently works only on OS X.**
+**The deployment script is currently configured only for OS X.**
 
 Example deploying the flight-computer on an Adafruit Feather M0 connected on the /dev/cu.usbmodem143301 port:
 ```
