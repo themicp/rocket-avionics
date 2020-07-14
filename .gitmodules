@@ -13,3 +13,6 @@
 [submodule "flight-computer/libraries/external/Adafruit_LSM9DS1"]
 	path = flight-computer/libraries/external/Adafruit_LSM9DS1
 	url = https://github.com/adafruit/Adafruit_LSM9DS1.git
+[submodule "flight-computer/libraries/external/Adafruit_BusIO"]
+	path = flight-computer/libraries/external/Adafruit_BusIO
+	url = https://github.com/adafruit/Adafruit_BusIO.git
