@@ -22,3 +22,6 @@
 [submodule "flight-computer/libraries/external/RadioHead"]
 	path = flight-computer/libraries/external/RadioHead
 	url = git@github.com:themicp/RadioHead.git
+[submodule "ground-receiver/libraries/external/RadioHead"]
+	path = ground-receiver/libraries/external/RadioHead
+	url = git@github.com:themicp/RadioHead.git
