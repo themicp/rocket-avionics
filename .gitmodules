@@ -10,3 +10,6 @@
 [submodule "flight-computer/libraries/external/Adafruit_Sensor"]
 	path = flight-computer/libraries/external/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor.git
+[submodule "flight-computer/libraries/external/Adafruit_LSM9DS1"]
+	path = flight-computer/libraries/external/Adafruit_LSM9DS1
+	url = https://github.com/adafruit/Adafruit_LSM9DS1.git
