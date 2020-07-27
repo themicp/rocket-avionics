@@ -28,3 +28,6 @@
 [submodule "ground-receiver/libraries/external/ArduinoJson"]
 	path = ground-receiver/libraries/external/ArduinoJson
 	url = https://github.com/bblanchon/ArduinoJson.git
+[submodule "flight-computer/libraries/external/Adafruit_GPS"]
+	path = flight-computer/libraries/external/Adafruit_GPS
+	url = https://github.com/adafruit/Adafruit_GPS
