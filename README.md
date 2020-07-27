@@ -11,7 +11,9 @@
 ## Setup
 Clone the repository with `git clone --recurse-submodules` to automatically download all the submodules.
 #### Ground Receiver
-The loggers require a `.env` file with local configuration. Copy `ground-receiver/message-handler/.env.template` to `ground-receiver/message-handler/.env` and fill it in with your configuration.
+- Copy `ground-receiver/message-handler/.env.template` to `ground-receiver/message-handler/.env` and fill it in with your configuration.
+- Run `npm install` inside `ground-receiver/message-handler`
+- Run `npm install` inside `ground-receiver/ground-controls`
 
 ## Deployment
 **The deployment script is currently configured only for OS X.**
