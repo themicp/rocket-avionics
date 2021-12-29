@@ -31,3 +31,6 @@
 [submodule "flight-computer/libraries/external/Adafruit_GPS"]
 	path = flight-computer/libraries/external/Adafruit_GPS
 	url = https://github.com/adafruit/Adafruit_GPS
+[submodule "flight-computer/libraries/external/SD"]
+	path = flight-computer/libraries/external/SD
+	url = https://github.com/arduino-libraries/SD
